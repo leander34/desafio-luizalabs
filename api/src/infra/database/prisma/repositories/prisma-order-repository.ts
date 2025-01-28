@@ -38,13 +38,13 @@ export class PrismaOrderRepository implements OrderRepository {
   }
 
   async findUniqueWithProducts(id: number): Promise<OrderWithProducts | null> {
-    const cacheKey = `order:${id}`
-    const cachedOrder = await this.cacheService.get(cacheKey)
+    // const cacheKey = `order:${id}`
+    // const cachedOrder = await this.cacheService.get(cacheKey)
 
-    if (cachedOrder) {
-      console.log('cache', 'findUniqueWithProducts')
-      return PrismaOrderWithProductsMapper.toDomain(JSON.parse(cachedOrder))
-    }
+    // if (cachedOrder) {
+    //   console.log('cache', 'findUniqueWithProducts')
+    //   return PrismaOrderWithProductsMapper.toDomain(JSON.parse(cachedOrder))
+    // }
 
     const orderById = await prismaClient.order.findUnique({
       where: {
@@ -72,11 +72,11 @@ export class PrismaOrderRepository implements OrderRepository {
       total: orderTotalValue,
     }
 
-    await this.cacheService.set(
-      cacheKey,
-      JSON.stringify(orderWithCombinedData),
-      60 * 60 * 2, // Duas horas
-    )
+    // await this.cacheService.set(
+    //   cacheKey,
+    //   JSON.stringify(orderWithCombinedData),
+    //   60 * 60 * 2, // Duas horas
+    // )
 
     return PrismaOrderWithProductsMapper.toDomain(orderWithCombinedData)
   }
@@ -85,6 +85,16 @@ export class PrismaOrderRepository implements OrderRepository {
     params: FindManyWithProductsParams,
     pagination: PaginationParams,
   ): Promise<OrderWithProducts[]> {
+    // const cacheKey = `order:cond:blabla`
+    // const cachedOrder = await this.cacheService.get(cacheKey)
+
+    // if (cachedOrder) {
+    //   console.log('cache', 'findManyWithProducts')
+
+    //   const ordersWithCombinedData = JSON.parse(cachedOrder)
+    //   return ordersWithCombinedData.map(PrismaOrderWithProductsMapper.toDomain)
+    // }
+
     const page = pagination.page ? Number(pagination.page) : null
     const size = pagination.size ? Number(pagination.size) : null
     const orders = await prismaClient.order.findMany({
@@ -112,16 +122,6 @@ export class PrismaOrderRepository implements OrderRepository {
         orderProducts: true,
       },
     })
-
-    const cacheKey = `order:cond:blabla`
-    const cachedOrder = await this.cacheService.get(cacheKey)
-
-    // if (cachedOrder) {
-    //   console.log('cache', 'findManyWithProducts')
-
-    //   const ordersWithCombinedData = JSON.parse(cachedOrder)
-    //   return ordersWithCombinedData.map(PrismaOrderWithProductsMapper.toDomain)
-    // }
 
     const ordersWithCombinedData = await Promise.all(
       orders.map(async (order) => {
@@ -158,11 +158,11 @@ export class PrismaOrderRepository implements OrderRepository {
       }),
     )
 
-    await this.cacheService.set(
-      cacheKey,
-      JSON.stringify(ordersWithCombinedData),
-      60 * 60 * 2, // Duas horas
-    )
+    // await this.cacheService.set(
+    //   cacheKey,
+    //   JSON.stringify(ordersWithCombinedData),
+    //   60 * 60 * 2, // Duas horas
+    // )
 
     return ordersWithCombinedData.map(PrismaOrderWithProductsMapper.toDomain)
   }
