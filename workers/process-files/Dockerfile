@@ -1,7 +1,6 @@
-# Usar imagem oficial do Node.js
 FROM node:20.18.1
 
-# Definir o diretório de trabalho
+# Diretório de trabalho
 WORKDIR /usr/src/app
 
 # Copiar os arquivos de dependências e instalar
