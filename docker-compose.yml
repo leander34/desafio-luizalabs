@@ -1,0 +1,100 @@
+services:
+  # Serviço do RabbitMQ
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"  # Porta de comunicação com o RabbitMQ
+      - "15672:15672"  # Porta da interface de gerenciamento (acessível via http://localhost:15672)
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    healthcheck:
+      test: rabbitmq-diagnostics -q status
+      timeout: 30s
+      retries: 10
+
+  # Serviço do MySQL para a API
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: desafio_labs
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data/mysql:/data/mysql      # Persistência de dados
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # s3 compatible storage service para armazenar os arquivos
+  minio:
+    image: minio/minio
+    container_name: minio
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin    
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+      - 6379:6379
+    volumes:
+      - ./data/redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      timeout: 20s
+      retries: 10     
+  # Serviço da API
+  api:
+    build:
+      context: ./api
+    container_name: api
+    env_file:
+      - ./api/.env
+    ports:
+      - "3000:3000"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+
+  # Serviço do Worker de Processamento de Arquivo
+  worker-process-files:
+    build:
+      context: ./workers/process-files
+    container_name: worker-process-files
+    env_file:
+      - ./workers/process-files/.env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  # Serviço do Worker de Processamento de Linhas
+  worker-process-rows:
+    build:
+      context: ./workers/process-rows
+    container_name: worker-process-rows
+    env_file:
+      - ./workers/process-rows/.env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+volumes:
+  mysql_data:
+  minio_data:
+    driver: local

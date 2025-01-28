@@ -1,0 +1,42 @@
+{
+  "name": "process-files",
+  "version": "1.0.0",
+  "main": "./src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsx watch ./src/index.ts",
+    "build": "tsup",
+    "start": "node ./dist/index.js",
+    "lint": "eslint src --ext .ts --fix"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@rocketseat/eslint-config": "^2.2.2",
+    "@types/amqplib": "^0.10.6",
+    "@types/node": "^22.10.7",
+    "dotenv": "^16.4.7",
+    "eslint": "^8.57.1",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "prettier": "^3.4.2",
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.734.0",
+    "@aws-sdk/lib-storage": "^3.734.0",
+    "amqplib": "^0.10.5",
+    "axios": "^1.7.9",
+    "dayjs": "^1.11.13",
+    "zod": "^3.24.1"
+  },
+  "prettier": "./prettier.mjs",
+  "eslintConfig": {
+    "extends": [
+      "./eslint.js"
+    ]
+  }
+}
