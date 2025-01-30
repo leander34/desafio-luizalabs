@@ -17,17 +17,17 @@ Decidi desenvolver o sistema em microsserviços, pois isso possibilita o process
 3. **Importante** Para adicionar as variáveis **STORAGE_SECRET_KEY** e **STORAGE_BUCKET_NAME** acessar portal do MinIO no navegador (http://localhost:9001) para criar as API KEYs. Para acessar essa URL o container já deve estar rodando. Veremos como fazer isso no próximo passo.
    
 ## Comandos Para Rodar o Projeto
-1. Descomente os arquivos **.env.example**
-2. Execute o seguinte comando `docker-compose up -d --build`
-3. Como os container rodando, precisamos de mais um variável ambiente
+1. Renomeie os arquivos **.env.example** para **.env**
+2. Primeiro precisamos da variáveis do MinIO, suba apenas o container dele.
+3. Execute o seguinte comando `docker-compose up -d minio`
 4. Acesse o portal do MinIO no http://localhost:9001, no campo username digite "minioadmin" e no campo password "minioadmin".
 5. Logando no portal, visualize o menu lateral esquerdo e clique no item "Access Keys".
-6. Clique no botão com texto "Create access key" que fica do lado direito da tela.
-7. Clique em "Create".
-8. Copie a "Access Key" e "Secret key".
-9. Coloque esses dados no **.env** da `./api/.env` e no `./workers/process-files/.env`
-10. Será necessário rebuildar a **api** e o **worker process files**
-11. Rode o comando `docker-compose up -d --build` para subir todos os container novamente.
+6.  Clique no botão com texto "Create access key" que fica do lado direito da tela.
+7.  Clique em "Create".
+8.  Copie a "Access Key" e "Secret key".
+9.  Coloque esses dados no **.env** da `./api/.env` e no `./workers/process-files/.env`
+10. Agora podemos subir todos os containers.
+11. Execute o seguinte comando `docker-compose up -d`
 
 
 ## 🔑 Como deve ficar o .env de cada pasta
@@ -85,11 +85,11 @@ Para apenas rodar os testes `docker exec -it api-s3kzfsoz34 npm run test`
 
 ### Para executar os testes do worker-process-files:
 Para gerar arquivos de coverage `docker exec -it worker-process-files-s3kzfsoz34 npm run test:coverage`
-Para apenas rodar os testes `docker exec -it worker-process-files-s3kzfsoz34 npm run test:coverage`
+Para apenas rodar os testes `docker exec -it worker-process-files-s3kzfsoz34 npm run test`
 
 ### Para executar os testes do worker-process-rows:
 Para gerar arquivos de coverage `docker exec -it worker-process-rows-s3kzfsoz34 npm run test:coverage`
-Para apenas rodar os testes `docker exec -it worker-process-rows-s3kzfsoz34 npm run test:coverage`
+Para apenas rodar os testes `docker exec -it worker-process-rows-s3kzfsoz34 npm run test`
 
 # Enviar requisições para API usando CURL
 ### Endpoint GET `/files/order`
@@ -199,10 +199,10 @@ Entrega mais rápida → Processamento paralelo significa que resultados chegam 
 ![system design](images/system-design.png)
 
 ## 🔍 Fluxo de Processamento
-**Upload de Arquivo**: O usuário envia um arquivo desnormalizado via API Fastify.
-**Processamento na API**: O arquivo é enviado para o MinIO para ser armazenado e acessado posteriormente, os meta dados do arquivo são salvos no MySQL e uma mensagem com o id od arquivo é pública na fila PROCESS.FILES.
-**No worker process files**: O arquivo é recuperado do bucket, lido em chunks e os dados são processados utilizando Streams, o que torna o uso de RAM baixíssimo. Posteriormente, uma mensagem é publicada na fila PROCESS.ROWS com a linha crua. Cada linha é enviada para um microsserviço via RabbitMQ para processamento assíncrono.
-**Enfileiramento com RabbitMQ**: As partes do arquivo processado são enviadas para RabbitMQ, que distribui as tarefas entre os workers disponíveis.
+- **Upload de Arquivo**: O usuário envia um arquivo desnormalizado via API Fastify.
+- **Processamento na API**: O arquivo é enviado para o MinIO para ser armazenado e acessado posteriormente, os meta dados do arquivo são salvos no MySQL e uma mensagem com o id od arquivo é pública na fila PROCESS.FILES.
+- **No worker process files**: O arquivo é recuperado do bucket, lido em chunks e os dados são processados utilizando Streams, o que torna o uso de RAM baixíssimo. Posteriormente, uma mensagem é publicada na fila PROCESS.ROWS com a linha crua. Cada linha é enviada para um microsserviço via RabbitMQ para processamento assíncrono.
+- **Enfileiramento com RabbitMQ**: As partes do arquivo processado são enviadas para RabbitMQ, que distribui as tarefas entre os workers disponíveis.
 No worker process rows: Cada linha é recebida, processada e validada de maneira que não ocorra perdas. Esse worker faz chamadas via http para a API para salvar cada linha no banco de dados. Como trabalhamos com IDs únicos no banco de dados, nenhum dado é duplicado.
 Armazenamento: Dados estruturados são armazenados no MySQL.
 

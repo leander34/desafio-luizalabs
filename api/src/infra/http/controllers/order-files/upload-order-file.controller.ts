@@ -6,6 +6,12 @@ import { BadRequestError } from '@/core/errors/bad-request-error'
 import { InvalidFileTypeError } from '@/core/errors/invalid-file-type-error'
 export class UploadOrderFileController {
   async handler(request: FastifyRequest, reply: FastifyReply) {
+    if (!request.isMultipart()) {
+      throw new BadRequestError(
+        'A requisição não é multipart/form-data',
+        'file',
+      )
+    }
     const uploadedFile = await request.file({
       limits: {
         fileSize: 10_485_760, // 10mb

@@ -42,7 +42,7 @@ export class CreateOrderUseCase {
       }
     }
 
-    const customerById = this.customerRepository.findById(customerId)
+    const customerById = await this.customerRepository.findById(customerId)
 
     if (!customerById) {
       return left(new ResourceNotFoundError('User not found.', 'user'))
