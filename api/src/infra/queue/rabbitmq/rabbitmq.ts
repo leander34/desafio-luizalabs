@@ -26,7 +26,7 @@ export class RabbitMQService implements QueueService {
     return RabbitMQService._instance
   }
 
-  private async createConnection(): Promise<void> {
+  async createConnection(): Promise<void> {
     try {
       if (!this.connection) {
         this.connection = await amqp.connect(this.uri)
@@ -60,7 +60,7 @@ export class RabbitMQService implements QueueService {
     }
   }
 
-  private async createChannel() {
+  async createChannel() {
     if (!this.connection) throw new RabbitMQConnectionError()
     this.channel = await this.connection.createChannel()
   }
@@ -70,7 +70,7 @@ export class RabbitMQService implements QueueService {
       throw new RabbitMQConnectionError()
     }
     if (!this.channel) {
-      throw new RabbitMQConnectionError('RabbitMQ channel is not initialized')
+      throw new RabbitMQConnectionError('RabbitMQ channel is not initialized.')
     }
     await this.channel.assertQueue(queueName, { durable: true })
   }
@@ -80,7 +80,7 @@ export class RabbitMQService implements QueueService {
       throw new RabbitMQConnectionError()
     }
     if (!this.channel) {
-      throw new RabbitMQConnectionError('RabbitMQ channel is not initialized')
+      throw new RabbitMQConnectionError('RabbitMQ channel is not initialized.')
     }
     await this.assertQueue(queueName)
     this.channel.sendToQueue(queueName, Buffer.from(JSON.stringify(message)), {
@@ -91,14 +91,18 @@ export class RabbitMQService implements QueueService {
 
   async close() {
     try {
-      if (!this.connection)
-        throw new RabbitMQConnectionError('RabbitMQ is not initialized')
-      if (!this.channel)
+      if (!this.connection) {
+        throw new RabbitMQConnectionError('RabbitMQ is not initialized.')
+      }
+      if (!this.channel) {
         throw new RabbitMQConnectionError(
-          'RabbitMQ consumer channel is not initialized',
+          'RabbitMQ consumer channel is not initialized.',
         )
+      }
       await this.channel.close()
+      this.channel = null
       await this.connection.close()
+      this.connection = null
       console.log('RabbitMQ connection closed')
     } catch (error) {
       console.error('Failed to close RabbitMQ connection:', error)

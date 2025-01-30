@@ -2,11 +2,11 @@ import type { Customer } from '@/types/customer'
 
 import { api } from '../api'
 
-interface GetCustomerHttpRequest {
+export interface GetCustomerHttpRequest {
   id: number
 }
 
-interface GetCustomerHttpResponse {
+export interface GetCustomerHttpResponse {
   user: Customer
 }
 

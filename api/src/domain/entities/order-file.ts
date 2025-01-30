@@ -13,24 +13,25 @@ export interface OrderFileProps {
   url: string
   error?: string | null
   createdAt: Date
-  updatedAt?: Date
+  updatedAt: Date
   deletedAt?: Date | null
 }
 
 export class OrderFile extends Entity<OrderFileProps> {
   static create(
-    props: Optional<OrderFileProps, 'createdAt' | 'error'>,
+    props: Optional<OrderFileProps, 'createdAt' | 'error' | 'updatedAt'>,
     id?: UniqueEntityId,
   ) {
-    const file = new OrderFile(
+    const orderFile = new OrderFile(
       {
         ...props,
         createdAt: props.createdAt ?? new Date(),
+        updatedAt: props.updatedAt ?? new Date(),
         error: props.error ?? null,
       },
       id,
     )
-    return file
+    return orderFile
   }
 
   get name() {

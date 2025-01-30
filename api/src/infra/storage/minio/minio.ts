@@ -14,15 +14,7 @@ import { BadRequestError } from '@/core/errors/bad-request-error'
 import type { StorageService, UploadParams } from '../interface'
 
 export class MinioStorage implements StorageService {
-  private s3Client = new S3Client({
-    endpoint: env.STORAGE_ENDPOINT,
-    region: env.STORAGE_REGION,
-    credentials: {
-      accessKeyId: env.STORAGE_ACCESS_KEY,
-      secretAccessKey: env.STORAGE_SECRET_KEY,
-    },
-    forcePathStyle: true,
-  })
+  constructor(private s3Client: S3Client) {}
 
   async createBucketIfNotExists(bucket: string) {
     try {

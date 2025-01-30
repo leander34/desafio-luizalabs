@@ -1,54 +1,73 @@
-import type { Optional } from '@/core/optional'
+import { UniqueEntityId } from '../../core/entities/unique-entity-id'
+import { Order } from './order'
 
-import { Entity } from '../../core/entities/entity'
-import type { UniqueEntityId } from '../../core/entities/unique-entity-id'
+describe('Order', () => {
+  it('should create an order with default createdAt and total', () => {
+    const order = Order.create({
+      date: '2023-01-01',
+      customerId: new UniqueEntityId(1),
+    })
 
-export interface OrderProps {
-  date: string
-  customerId: UniqueEntityId
-  total: number
-  createdAt: Date
-  updatedAt?: Date
-  deletedAt?: Date | null
-}
+    expect(order.date).toBe('2023-01-01')
+    expect(order.customerId.toValue()).toBe(1)
+    expect(order.total).toBe(0)
+    expect(order.createdAt).toBeInstanceOf(Date)
+    expect(order.updatedAt).toBeUndefined()
+    expect(order.deletedAt).toBeUndefined()
+  })
 
-export class Order extends Entity<OrderProps> {
-  static create(
-    props: Optional<OrderProps, 'createdAt' | 'total'>,
-    id?: UniqueEntityId,
-  ) {
-    const order = new Order(
+  it('should create an order with provided createdAt', () => {
+    const createdAt = new Date(2021, 1, 1)
+    const order = Order.create(
       {
-        ...props,
-        createdAt: props.createdAt ?? new Date(),
-        total: props.total ?? 0,
+        date: '2023-01-01',
+        customerId: new UniqueEntityId(2),
+        createdAt,
+        total: 500,
       },
-      id,
+      undefined,
     )
-    return order
-  }
 
-  get customerId() {
-    return this.props.customerId
-  }
+    expect(order.createdAt).toBe(createdAt)
+    expect(order.total).toBe(500)
+  })
 
-  get date() {
-    return this.props.date
-  }
+  it('should create an order with a provided UniqueEntityId', () => {
+    const uniqueId = new UniqueEntityId(123)
+    const order = Order.create(
+      {
+        date: '2023-01-01',
+        customerId: new UniqueEntityId(3),
+        total: 150,
+      },
+      uniqueId,
+    )
 
-  get total() {
-    return this.props.total
-  }
+    expect(order.id.toValue()).toBe(123)
+  })
 
-  get createdAt() {
-    return this.props.createdAt
-  }
+  it('should set deletedAt to undefined if not provided', () => {
+    const order = Order.create({
+      date: '2023-01-01',
+      customerId: new UniqueEntityId(4),
+      total: 200,
+    })
 
-  get updatedAt() {
-    return this.props.updatedAt
-  }
+    expect(order.deletedAt).toBeUndefined()
+  })
 
-  get deletedAt() {
-    return this.props.deletedAt
-  }
-}
+  it('should create an order with deletedAt when provided', () => {
+    const deletedAt = new Date(2023, 1, 1)
+    const order = Order.create(
+      {
+        date: '2023-01-01',
+        customerId: new UniqueEntityId(5),
+        total: 300,
+        deletedAt,
+      },
+      undefined,
+    )
+
+    expect(order.deletedAt).toBe(deletedAt)
+  })
+})

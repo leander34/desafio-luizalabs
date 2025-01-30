@@ -9,4 +9,5 @@ export interface UploadParams {
 
 export interface StorageService {
   upload(params: UploadParams): Promise<{ bucket: string; key: string }>
+  createBucketIfNotExists(bucket: string): Promise<void>
 }

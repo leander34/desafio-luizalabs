@@ -3,6 +3,7 @@ import { hasZodFastifySchemaValidationErrors } from 'fastify-type-provider-zod'
 
 import { env } from '@/config/env'
 
+import { ValidationError } from './core/errors/validation-error'
 import { normalizeError } from './utlis/normalize-error'
 type FastifyErrorHandler = FastifyInstance['errorHandler']
 
@@ -18,15 +19,21 @@ export const errorHandler: FastifyErrorHandler = (error, request, reply) => {
     })
   }
 
+  if (error instanceof ValidationError) {
+    return reply.status(400).send(error.getBody())
+  }
+
   const normalizedError = normalizeError(error)
 
   const httpCode = normalizedError.statusCode
   const body = normalizedError.getBody()
 
   if (env.NODE_ENV === 'production') {
-    console.error(error)
+    // Colocar logs
+    // Sentry, datadog
+    // console.error(error)
   } else {
-    console.error(error)
+    // console.error(error)
   }
 
   return reply.status(httpCode).send(body)

@@ -2,11 +2,11 @@ import type { OrderFile } from '@/types/order-file'
 
 import { api } from '../api'
 
-interface GetOrderFileHttpRequest {
+export interface GetOrderFileHttpRequest {
   orderFileId: number
 }
 
-interface GetOrderFileHttpResponse {
+export interface GetOrderFileHttpResponse {
   order_file: OrderFile
 }
 

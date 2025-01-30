@@ -1,4 +1,4 @@
-import type { OrderWithProducts } from '@/domain/value-obejcts/order-with-product'
+import type { OrderWithProducts } from '@/domain/value-obejcts/order-with-products'
 
 export class OrderWithProductPresenter {
   static toHttp(orderWithProducts: OrderWithProducts) {

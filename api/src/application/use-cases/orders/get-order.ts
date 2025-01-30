@@ -1,7 +1,7 @@
 import type { OrderRepository } from '@/application/repositories/order-repository'
 import { type Either, left, right } from '@/core/either'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
-import type { OrderWithProducts } from '@/domain/value-obejcts/order-with-product'
+import type { OrderWithProducts } from '@/domain/value-obejcts/order-with-products'
 
 interface GetOrderUseCaseRequest {
   orderId: number

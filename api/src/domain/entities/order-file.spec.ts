@@ -1,79 +1,112 @@
-import type { OrderFileStatus } from '@prisma/client'
+import { UniqueEntityId } from '../../core/entities/unique-entity-id'
+import { OrderFile } from './order-file'
 
-import type { Optional } from '@/core/optional'
+describe('OrderFile', () => {
+  it('should create an order file with default createdAt and updatedAt', () => {
+    const orderFile = OrderFile.create({
+      name: 'file1',
+      bucket: 'bucket1',
+      key: 'key1',
+      status: 'PROCESSING',
+      url: 'http://example.com/file1',
+    })
 
-import { Entity } from '../../core/entities/entity'
-import type { UniqueEntityId } from '../../core/entities/unique-entity-id'
+    expect(orderFile.name).toBe('file1')
+    expect(orderFile.createdAt).toBeInstanceOf(Date)
+    expect(orderFile.updatedAt).toBeInstanceOf(Date)
+    expect(orderFile.deletedAt).toBeUndefined()
+    expect(orderFile.error).toBeNull()
+  })
 
-export interface OrderFileProps {
-  name: string
-  bucket: string
-  key: string
-  status: 'PROCESSING' | 'PROCESSED' | 'PROCESSING_ERROR'
-  url: string
-  error?: string | null
-  createdAt: Date
-  updatedAt?: Date
-  deletedAt?: Date | null
-}
+  it('should create an order file with provided createdAt and updatedAt', () => {
+    const createdAt = new Date(2021, 1, 1)
+    const updatedAt = new Date(2022, 1, 1)
 
-export class OrderFile extends Entity<OrderFileProps> {
-  static create(
-    props: Optional<OrderFileProps, 'createdAt' | 'error'>,
-    id?: UniqueEntityId,
-  ) {
-    const file = new OrderFile(
+    const orderFile = OrderFile.create(
       {
-        ...props,
-        createdAt: props.createdAt ?? new Date(),
-        error: props.error ?? null,
+        name: 'file2',
+        bucket: 'bucket2',
+        key: 'key2',
+        status: 'PROCESSED',
+        url: 'http://example.com/file2',
+        createdAt,
+        updatedAt,
       },
-      id,
+      undefined,
     )
-    return file
-  }
 
-  get name() {
-    return this.props.name
-  }
+    expect(orderFile.createdAt).toBe(createdAt)
+    expect(orderFile.updatedAt).toBe(updatedAt)
+  })
 
-  get bucket() {
-    return this.props.bucket
-  }
+  it('should create an order file with a provided UniqueEntityId', () => {
+    const uniqueId = new UniqueEntityId(123)
+    const orderFile = OrderFile.create(
+      {
+        name: 'file3',
+        bucket: 'bucket3',
+        key: 'key3',
+        status: 'PROCESSING_ERROR',
+        url: 'http://example.com/file3',
+      },
+      uniqueId,
+    )
 
-  get key() {
-    return this.props.key
-  }
+    expect(orderFile.id.toValue()).toBe(123)
+  })
 
-  get status() {
-    return this.props.status
-  }
+  it('should update the status of the order file', () => {
+    const orderFile = OrderFile.create({
+      name: 'file4',
+      bucket: 'bucket4',
+      key: 'key4',
+      status: 'PROCESSING',
+      url: 'http://example.com/file4',
+    })
 
-  set status(status: OrderFileStatus) {
-    this.props.status = status
-  }
+    orderFile.status = 'PROCESSED'
+    expect(orderFile.status).toBe('PROCESSED')
+  })
 
-  get url() {
-    return this.props.url
-  }
+  it('should update the error of the order file', () => {
+    const orderFile = OrderFile.create({
+      name: 'file5',
+      bucket: 'bucket5',
+      key: 'key5',
+      status: 'PROCESSING_ERROR',
+      url: 'http://example.com/file5',
+    })
 
-  get error() {
-    return this.props.error
-  }
+    orderFile.error = 'Some error occurred'
+    expect(orderFile.error).toBe('Some error occurred')
+  })
 
-  set error(error: string | null | undefined) {
-    this.props.error = error
-  }
+  it('should set deletedAt to undefined if not provided', () => {
+    const orderFile = OrderFile.create({
+      name: 'file6',
+      bucket: 'bucket6',
+      key: 'key6',
+      status: 'PROCESSING',
+      url: 'http://example.com/file6',
+    })
 
-  get createdAt() {
-    return this.props.createdAt
-  }
+    expect(orderFile.deletedAt).toBeUndefined()
+  })
 
-  get updatedAt() {
-    return this.props.updatedAt
-  }
+  it('should create an order file with deletedAt when provided', () => {
+    const deletedAt = new Date(2023, 1, 1)
+    const orderFile = OrderFile.create(
+      {
+        name: 'file7',
+        bucket: 'bucket7',
+        key: 'key7',
+        status: 'PROCESSING',
+        url: 'http://example.com/file7',
+        deletedAt,
+      },
+      undefined,
+    )
 
-  get deletedAt() {
-    return this.props.deletedAt
-  }
-}
+    expect(orderFile.deletedAt).toBe(deletedAt)
+  })
+})

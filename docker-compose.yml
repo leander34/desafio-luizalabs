@@ -2,7 +2,7 @@ services:
   # Serviço do RabbitMQ
   rabbitmq:
     image: rabbitmq:management
-    container_name: rabbitmq
+    container_name: rabbitmq-s3kzfsoz34
     ports:
       - "5672:5672"  # Porta de comunicação com o RabbitMQ
       - "15672:15672"  # Porta da interface de gerenciamento (acessível via http://localhost:15672)
@@ -17,7 +17,7 @@ services:
   # Serviço do MySQL para a API
   mysql:
     image: mysql:8.0
-    container_name: mysql
+    container_name: mysql-s3kzfsoz34
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: desafio_labs
@@ -35,7 +35,7 @@ services:
   # s3 compatible storage service para armazenar os arquivos
   minio:
     image: minio/minio
-    container_name: minio
+    container_name: minio-s3kzfsoz34
     environment:
       - MINIO_ROOT_USER=minioadmin
       - MINIO_ROOT_PASSWORD=minioadmin    
@@ -47,7 +47,7 @@ services:
       - minio_data:/data
 
   redis:
-    container_name: redis
+    container_name: redis-s3kzfsoz34
     image: redis
     ports:
       - 6379:6379
@@ -61,7 +61,7 @@ services:
   api:
     build:
       context: ./api
-    container_name: api
+    container_name: api-s3kzfsoz34
     env_file:
       - ./api/.env
     ports:
@@ -76,7 +76,7 @@ services:
   worker-process-files:
     build:
       context: ./workers/process-files
-    container_name: worker-process-files
+    container_name: worker-process-files-s3kzfsoz34
     env_file:
       - ./workers/process-files/.env
     depends_on:
@@ -87,7 +87,7 @@ services:
   worker-process-rows:
     build:
       context: ./workers/process-rows
-    container_name: worker-process-rows
+    container_name: worker-process-rows-s3kzfsoz34
     env_file:
       - ./workers/process-rows/.env
     depends_on:

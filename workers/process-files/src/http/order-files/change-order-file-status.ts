@@ -2,7 +2,7 @@ import type { OrderFileStatus } from '@/types/order-file'
 
 import { api } from '../api'
 
-interface ChangeOrderFileStatusHttpRequest {
+export interface ChangeOrderFileStatusHttpRequest {
   orderFileId: number
   status: OrderFileStatus
   error?: string

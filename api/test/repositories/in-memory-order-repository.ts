@@ -3,7 +3,7 @@ import { generateRandomId } from 'test/utils/generate-random-id'
 import type { OrderRepository } from '@/application/repositories/order-repository'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Order } from '@/domain/entities/order.spec'
-import { OrderWithProducts } from '@/domain/value-obejcts/order-with-product'
+import { OrderWithProducts } from '@/domain/value-obejcts/order-with-products'
 
 import type { InMemoryOrderRespositoryRepository } from './in-memory-order-product-repository'
 

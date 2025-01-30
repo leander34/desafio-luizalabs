@@ -3,14 +3,14 @@ import type { OrderProduct } from '@/types/order-product'
 
 import { api } from '../api'
 
-interface GetOrderHttpRequest {
+export interface GetOrderHttpRequest {
   customerId: number
   orderId: number
 }
 
-interface GetOrderHttpResponse {
+export interface GetOrderHttpResponse {
   order: Order & {
-    products: OrderProduct
+    products: OrderProduct[]
   }
 }
 

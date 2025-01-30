@@ -27,7 +27,9 @@ export class PrismaOrderProductRepository implements OrderProductRepository {
       },
     })
 
-    if (!prismaOrderProduct) return null
+    if (!prismaOrderProduct) {
+      return null
+    }
 
     return PrismaOrderProductMapper.toDomain(prismaOrderProduct)
   }
@@ -40,10 +42,6 @@ export class PrismaOrderProductRepository implements OrderProductRepository {
       data: orderProductConvertedToPrisma,
     })
 
-    // await this.cacheService.delete(`order:${orderProduct.orderId}`)
-    // await this.cacheService.deleteKeysByPattern(
-    //   `order:${orderProduct.orderId.toValue()}*`,
-    // )
     await this.cacheService.deleteKeysByPattern(`order*`)
   }
 
@@ -56,10 +54,6 @@ export class PrismaOrderProductRepository implements OrderProductRepository {
         quantity: orderProduct.quantity,
       },
     })
-    // await this.cacheService.delete(`order:${prismaOrderProduct.orderId}`)
-    // await this.cacheService.deleteKeysByPattern(
-    //   `order:${prismaOrderProduct.orderId}*`,
-    // )
     await this.cacheService.deleteKeysByPattern(`order*`)
   }
 }

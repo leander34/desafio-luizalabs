@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/65</span>
+                <span class='fraction'>0/57</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/65</span>
+                <span class='fraction'>0/57</span>
             </div>
         
             
@@ -120,23 +120,7 @@
 <a name='L55'></a><a href='#L55'>55</a>
 <a name='L56'></a><a href='#L56'>56</a>
 <a name='L57'></a><a href='#L57'>57</a>
-<a name='L58'></a><a href='#L58'>58</a>
-<a name='L59'></a><a href='#L59'>59</a>
-<a name='L60'></a><a href='#L60'>60</a>
-<a name='L61'></a><a href='#L61'>61</a>
-<a name='L62'></a><a href='#L62'>62</a>
-<a name='L63'></a><a href='#L63'>63</a>
-<a name='L64'></a><a href='#L64'>64</a>
-<a name='L65'></a><a href='#L65'>65</a>
-<a name='L66'></a><a href='#L66'>66</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<a name='L58'></a><a href='#L58'>58</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -223,7 +207,7 @@
 <span class="cstat-no" title="statement not covered" >    const orderById = await this.orderRepository.findById(orderId)</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    if (!orderById) {</span>
-<span class="cstat-no" title="statement not covered" >      return left(new ResourceNotFoundError('Order not found.'))</span>
+<span class="cstat-no" title="statement not covered" >      return left(new ResourceNotFoundError('Order not found.', 'order'))</span>
 <span class="cstat-no" title="statement not covered" >    }</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    const existsAProductWithSameTheValueInTheOrder =</span>
@@ -232,21 +216,13 @@
 <span class="cstat-no" title="statement not covered" >        productId,</span>
 <span class="cstat-no" title="statement not covered" >        value,</span>
 <span class="cstat-no" title="statement not covered" >      })</span>
-<span class="cstat-no" title="statement not covered" >    console.log(existsAProductWithSameTheValueInTheOrder?.value)</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    if (existsAProductWithSameTheValueInTheOrder) {</span>
-<span class="cstat-no" title="statement not covered" >      await this.orderProductRepository.increaseQuantity({</span>
-<span class="cstat-no" title="statement not covered" >        orderProductId: existsAProductWithSameTheValueInTheOrder.id.toValue(),</span>
-<span class="cstat-no" title="statement not covered" >        quantity: existsAProductWithSameTheValueInTheOrder.quantity + 1,</span>
-<span class="cstat-no" title="statement not covered" >      })</span>
-<span class="cstat-no" title="statement not covered" >    } else {</span>
-<span class="cstat-no" title="statement not covered" >      console.log(</span>
-<span class="cstat-no" title="statement not covered" >        '----------------------------',</span>
-<span class="cstat-no" title="statement not covered" >        value,</span>
-<span class="cstat-no" title="statement not covered" >        orderId,</span>
-<span class="cstat-no" title="statement not covered" >        productId,</span>
-<span class="cstat-no" title="statement not covered" >        Number(value.toFixed(2)),</span>
+<span class="cstat-no" title="statement not covered" >      existsAProductWithSameTheValueInTheOrder.increaseQuantity()</span>
+<span class="cstat-no" title="statement not covered" >      await this.orderProductRepository.increaseQuantity(</span>
+<span class="cstat-no" title="statement not covered" >        existsAProductWithSameTheValueInTheOrder,</span>
 <span class="cstat-no" title="statement not covered" >      )</span>
+<span class="cstat-no" title="statement not covered" >    } else {</span>
 <span class="cstat-no" title="statement not covered" >      const orderProduct = OrderProduct.create({</span>
 <span class="cstat-no" title="statement not covered" >        orderId: new UniqueEntityId(orderId),</span>
 <span class="cstat-no" title="statement not covered" >        productId: new UniqueEntityId(productId),</span>
@@ -265,7 +241,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-01-27T14:27:40.669Z
+                at 2025-01-29T22:24:52.086Z
             </div>
         <script src="../../../../../prettify.js"></script>
         <script>

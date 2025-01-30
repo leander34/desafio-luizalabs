@@ -20,12 +20,16 @@ const envSchema = z.object({
   STORAGE_PROVIDER: z.string().default('MINIO'),
   STORAGE_ENDPOINT: z.string().default('minio'),
   STORAGE_PORT: z.coerce.number().default(9000),
-  STORAGE_ACCESS_KEY: z.string({
-    required_error: 'STORAGE_ACCESS_KEY is missing',
-  }),
-  STORAGE_SECRET_KEY: z.string({
-    required_error: 'STORAGE_SECRET_KEY is missing',
-  }),
+  STORAGE_ACCESS_KEY: z
+    .string({
+      required_error: 'STORAGE_ACCESS_KEY is missing',
+    })
+    .min(5),
+  STORAGE_SECRET_KEY: z
+    .string({
+      required_error: 'STORAGE_SECRET_KEY is missing',
+    })
+    .min(5),
   STORAGE_BUCKET_NAME: z.string().default('desafio-labs'),
   STORAGE_REGION: z.string({
     required_error: 'STORAGE_REGION is missing',

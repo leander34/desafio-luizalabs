@@ -5,5 +5,6 @@ module.exports = {
   rules: {
     'simple-import-sort/imports': 'error',
     '@typescript-eslint/no-explicit-any': 'off',
+    'no-useless-constructor': 'off',
   },
 }

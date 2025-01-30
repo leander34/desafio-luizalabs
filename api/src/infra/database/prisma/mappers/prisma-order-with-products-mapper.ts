@@ -1,7 +1,7 @@
 import { Order, OrderProduct } from '@prisma/client'
 
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { OrderWithProducts } from '@/domain/value-obejcts/order-with-product'
+import { OrderWithProducts } from '@/domain/value-obejcts/order-with-products'
 
 type OrderProductUpdated = Array<
   Omit<OrderProduct, 'value'> & {

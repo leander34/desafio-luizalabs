@@ -1,43 +1,47 @@
-import type { Optional } from '@/core/optional'
+import { UniqueEntityId } from '../../core/entities/unique-entity-id'
+import { Customer } from './customer'
 
-import { Entity } from '../../core/entities/entity'
-import type { UniqueEntityId } from '../../core/entities/unique-entity-id'
+describe('Customer', () => {
+  it('should create a customer with default dates if not provided', () => {
+    const customer = Customer.create({ name: 'Leander' })
 
-export interface CustomerProps {
-  name: string
-  createdAt: Date
-  updatedAt?: Date
-  deletedAt?: Date | null
-}
+    expect(customer.name).toBe('Leander')
+    expect(customer.createdAt).toBeInstanceOf(Date)
+    expect(customer.updatedAt).toBeInstanceOf(Date)
+    expect(customer.deletedAt).toBeUndefined()
+  })
 
-export class Customer extends Entity<CustomerProps> {
-  static create(
-    props: Optional<CustomerProps, 'createdAt'>,
-    id?: UniqueEntityId,
-  ) {
-    const order = new Customer(
-      {
-        ...props,
-        createdAt: props.createdAt ?? new Date(),
-      },
-      id,
+  it('should create a customer with provided dates', () => {
+    const createdAt = new Date(2021, 1, 1)
+    const updatedAt = new Date(2022, 1, 1)
+
+    const customer = Customer.create(
+      { name: 'Leander', createdAt, updatedAt },
+      undefined,
     )
-    return order
-  }
 
-  get name() {
-    return this.props.name
-  }
+    expect(customer.name).toBe('Leander')
+    expect(customer.createdAt).toBe(createdAt)
+    expect(customer.updatedAt).toBe(updatedAt)
+  })
 
-  get createdAt() {
-    return this.props.createdAt
-  }
+  it('should create a customer with a provided UniqueEntityId', () => {
+    const uniqueId = new UniqueEntityId(123)
+    const customer = Customer.create({ name: 'Leander' }, uniqueId)
 
-  get updatedAt() {
-    return this.props.updatedAt
-  }
+    expect(customer.id.toValue()).toBe(123)
+  })
 
-  get deletedAt() {
-    return this.props.deletedAt
-  }
-}
+  it('should set deletedAt to undefined if not provided', () => {
+    const customer = Customer.create({ name: 'Leander' })
+
+    expect(customer.deletedAt).toBeUndefined()
+  })
+
+  it('should create a customer with deletedAt when provided', () => {
+    const deletedAt = new Date(2023, 1, 1)
+    const customer = Customer.create({ name: 'Leander', deletedAt }, undefined)
+
+    expect(customer.deletedAt).toBe(deletedAt)
+  })
+})

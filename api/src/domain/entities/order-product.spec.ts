@@ -1,59 +1,103 @@
-import type { Optional } from '@/core/optional'
+import { UniqueEntityId } from '../../core/entities/unique-entity-id'
+import { OrderProduct } from './order-product'
 
-import { Entity } from '../../core/entities/entity'
-import type { UniqueEntityId } from '../../core/entities/unique-entity-id'
+describe('OrderProduct', () => {
+  it('should create an order product with default createdAt and quantity', () => {
+    const orderProduct = OrderProduct.create({
+      orderId: new UniqueEntityId(1),
+      productId: new UniqueEntityId(101),
+      value: 100,
+    })
 
-export interface OrderProductProps {
-  orderId: UniqueEntityId
-  productId: UniqueEntityId
-  value: number
-  quantity: number
-  createdAt: Date
-  updatedAt?: Date
-  deletedAt?: Date | null
-}
+    expect(orderProduct.orderId.toValue()).toBe(1)
+    expect(orderProduct.productId.toValue()).toBe(101)
+    expect(orderProduct.value).toBe(100)
+    expect(orderProduct.quantity).toBe(1)
+    expect(orderProduct.createdAt).toBeInstanceOf(Date)
+    expect(orderProduct.updatedAt).toBeUndefined()
+    expect(orderProduct.deletedAt).toBeUndefined()
+  })
 
-export class OrderProduct extends Entity<OrderProductProps> {
-  static create(
-    props: Optional<OrderProductProps, 'createdAt' | 'quantity'>,
-    id?: UniqueEntityId,
-  ) {
-    const order = new OrderProduct(
+  it('should create an order product with provided createdAt', () => {
+    const createdAt = new Date(2021, 1, 1)
+    const orderProduct = OrderProduct.create(
       {
-        ...props,
-        createdAt: props.createdAt ?? new Date(),
-        quantity: props.quantity ?? 1,
+        orderId: new UniqueEntityId(1),
+        productId: new UniqueEntityId(102),
+        value: 150,
+        createdAt,
+        quantity: 3,
       },
-      id,
+      undefined,
     )
-    return order
-  }
 
-  get orderId() {
-    return this.props.orderId
-  }
+    expect(orderProduct.createdAt).toBe(createdAt)
+  })
 
-  get productId() {
-    return this.props.productId
-  }
+  it('should create an order product with a provided UniqueEntityId', () => {
+    const uniqueId = new UniqueEntityId(123)
+    const orderProduct = OrderProduct.create(
+      {
+        orderId: new UniqueEntityId(1),
+        productId: new UniqueEntityId(104),
+        value: 250,
+        quantity: 2,
+      },
+      uniqueId,
+    )
 
-  get value() {
-    return this.props.value
-  }
+    expect(orderProduct.id.toValue()).toBe(123)
+  })
 
-  get quantity() {
-    return this.props.quantity
-  }
+  it('should increase the quantity of the order product', () => {
+    const orderProduct = OrderProduct.create({
+      orderId: new UniqueEntityId(1),
+      productId: new UniqueEntityId(103),
+      value: 50,
+      quantity: 5,
+    })
 
-  get createdAt() {
-    return this.props.createdAt
-  }
+    expect(orderProduct.quantity).toBe(5)
+    orderProduct.increaseQuantity()
+    expect(orderProduct.quantity).toBe(6)
+  })
 
-  get updatedAt() {
-    return this.props.updatedAt
-  }
+  it('should set deletedAt to undefined if not provided', () => {
+    const orderProduct = OrderProduct.create({
+      orderId: new UniqueEntityId(1),
+      productId: new UniqueEntityId(105),
+      value: 200,
+      quantity: 10,
+    })
 
-  get deletedAt() {
-    return this.props.deletedAt
-  }
-}
+    expect(orderProduct.deletedAt).toBeUndefined()
+  })
+
+  it('should create an order product with deletedAt when provided', () => {
+    const deletedAt = new Date(2023, 1, 1)
+    const orderProduct = OrderProduct.create(
+      {
+        orderId: new UniqueEntityId(1),
+        productId: new UniqueEntityId(106),
+        value: 400,
+        quantity: 1,
+        deletedAt,
+      },
+      undefined,
+    )
+
+    expect(orderProduct.deletedAt).toBe(deletedAt)
+  })
+
+  it('should correctly calculate the total value based on value and quantity', () => {
+    const orderProduct = OrderProduct.create({
+      orderId: new UniqueEntityId(1),
+      productId: new UniqueEntityId(107),
+      value: 100,
+      quantity: 3,
+    })
+
+    const totalValue = orderProduct.value * orderProduct.quantity
+    expect(totalValue).toBe(300)
+  })
+})

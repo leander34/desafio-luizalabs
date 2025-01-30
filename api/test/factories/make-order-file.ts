@@ -9,9 +9,9 @@ export function makeOrderFile(
 ) {
   const orderFile = OrderFile.create(
     {
-      bucket: faker.image.avatar(),
+      bucket: faker.person.fullName(),
       key: faker.image.avatar(),
-      name: faker.image.avatar(),
+      name: faker.person.fullName(),
       status: 'PROCESSING',
       url: faker.internet.url(),
       ...override,

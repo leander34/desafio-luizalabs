@@ -65,14 +65,10 @@ export class UploadOrderFileUseCase {
 
     const orderFileCreated = await this.orderFileRepository.create(orderFile)
 
-    try {
-      await this.queueService.assertQueue(env.QUEUE_PROCESS_FILES)
-      await this.queueService.publish(env.QUEUE_PROCESS_FILES, {
-        order_file_id: orderFileCreated.id.toValue(),
-      })
-    } catch (error) {
-      console.log(error)
-    }
+    await this.queueService.assertQueue(env.QUEUE_PROCESS_FILES)
+    await this.queueService.publish(env.QUEUE_PROCESS_FILES, {
+      order_file_id: orderFileCreated.id.toValue(),
+    })
 
     return right(null)
   }

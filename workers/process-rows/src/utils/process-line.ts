@@ -1,6 +1,6 @@
-import { dateFormatter } from './date-formatter'
-import { fieldFormatValidator } from './field-format-validator'
-import { removeLeadingZeros } from './remove-leading-zeros'
+import { dateFormatter } from './formatters/date-formatter'
+import { removeLeadingZeros } from './formatters/remove-leading-zeros'
+import { fieldFormatValidator } from './validators/field-format-validator'
 
 export function processLine(line: string) {
   return {
