@@ -72,8 +72,6 @@ export class ProcessFilesWorkerService implements ProcessFilesService {
           crlfDelay: Infinity,
         })
 
-        console.log('Lendo arquivo linha por linha:')
-
         for await (const line of rl) {
           this.queueService.sendToQueue(
             this.processRowsQueue,
@@ -90,10 +88,8 @@ export class ProcessFilesWorkerService implements ProcessFilesService {
           status: 'PROCESSED',
         })
 
-        console.log(`Mensagem recebida: ${msg.content.toString()}`)
         return this.queueService.confirmAck(msg)
       } catch (error) {
-        console.log(error)
         await this.orderFileService.changeOrderFileStatus({
           orderFileId: Number(orderFileId),
           status: 'PROCESSING_ERROR',
