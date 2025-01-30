@@ -12,10 +12,10 @@ import { prismaClient } from '@/lib/prisma-client'
 import { PrismaCustomerMapper } from '../mappers/prisma-customer-mapper'
 import { PrismaCustomerWithProductsMapper } from '../mappers/prisma-customer-with-products-mapper'
 export class PrismaCustomerRepository implements CustomerRepository {
-  constructor(private prisma = prismaClient) {}
+  constructor() {}
 
   async findById(id: number): Promise<Customer | null> {
-    const prismaCustomer = await this.prisma.customer.findUnique({
+    const prismaCustomer = await prismaClient.customer.findUnique({
       where: {
         id,
       },
@@ -28,7 +28,7 @@ export class PrismaCustomerRepository implements CustomerRepository {
 
   async create(customer: Customer): Promise<void> {
     const customerConvertedToPrisma = PrismaCustomerMapper.toPrisma(customer)
-    await this.prisma.customer.create({
+    await prismaClient.customer.create({
       data: customerConvertedToPrisma,
     })
   }

@@ -8,7 +8,7 @@ export class PrismaOrderFileRepository implements OrderFileRepository {
   constructor(private prisma = prismaClient) {}
   async create(orderFile: OrderFile): Promise<OrderFile> {
     const orderFileConvertedToPrisma = PrismaOrderFileMapper.toPrisma(orderFile)
-    const prismaOrderFileCreated = await this.prisma.orderFile.create({
+    const prismaOrderFileCreated = await prismaClient.orderFile.create({
       data: orderFileConvertedToPrisma,
     })
 
@@ -16,7 +16,7 @@ export class PrismaOrderFileRepository implements OrderFileRepository {
   }
 
   async findById(id: number): Promise<OrderFile | null> {
-    const prismaOrderFile = await this.prisma.orderFile.findUnique({
+    const prismaOrderFile = await prismaClient.orderFile.findUnique({
       where: {
         id,
       },
@@ -30,7 +30,7 @@ export class PrismaOrderFileRepository implements OrderFileRepository {
   }
 
   async changeStatus(orderFile: OrderFile): Promise<void> {
-    await this.prisma.orderFile.update({
+    await prismaClient.orderFile.update({
       where: {
         id: orderFile.id.toValue(),
       },

@@ -1,4 +1,4 @@
-### DESAFIO TÉCNICO LUZIA LABS
+### DESAFIO TÉCNICO LUIZA LABS
 # 🏗 Processamento de Arquivos Desnormalizados com Streams e Microserviços
 
 
@@ -18,16 +18,7 @@ Decidi desenvolver o sistema em microsserviços, pois isso possibilita o process
    
 ## Comandos Para Rodar o Projeto
 1. Renomeie os arquivos **.env.example** para **.env**
-2. Primeiro precisamos da variáveis do MinIO, suba apenas o container dele.
-3. Execute o seguinte comando `docker-compose up -d minio`
-4. Acesse o portal do MinIO no http://localhost:9001, no campo username digite "minioadmin" e no campo password "minioadmin".
-5. Logando no portal, visualize o menu lateral esquerdo e clique no item "Access Keys".
-6.  Clique no botão com texto "Create access key" que fica do lado direito da tela.
-7.  Clique em "Create".
-8.  Copie a "Access Key" e "Secret key".
-9.  Coloque esses dados no **.env** da `./api/.env` e no `./workers/process-files/.env`
-10. Agora podemos subir todos os containers.
-11. Execute o seguinte comando `docker-compose up -d`
+2. Execute o seguinte comando `docker-compose up -d`
 
 
 ## 🔑 Como deve ficar o .env de cada pasta
