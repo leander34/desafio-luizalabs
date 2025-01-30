@@ -24,8 +24,6 @@ export class ProcessRowsWorkerService implements ProcessRowsService {
     content: Buffer<ArrayBufferLike>,
     headers: amqp.Options.Publish['headers'] = {},
   ) {
-    console.log('headers')
-    console.log(headers)
     this.queueService.sendToQueue(this.processRowsQueueDLQ, content, {
       persistent: true,
       headers,
@@ -37,8 +35,6 @@ export class ProcessRowsWorkerService implements ProcessRowsService {
     headers: amqp.MessagePropertyHeaders,
     retries: number,
   ) {
-    console.log('--------------------------')
-    console.log(headers, retries)
     if (retries < this.MAX_RETRIES) {
       headers.retries = retries + 1
       this.queueService.sendToQueue(this.processRowsQueueRetry, content, {
@@ -88,19 +84,10 @@ export class ProcessRowsWorkerService implements ProcessRowsService {
         const { customerId, name, orderId, date, productId, value } =
           processLine(content)
 
-        console.log({ customerId, name, orderId, date, productId, value })
         const customer = await this.customerService.findOrCreateCustomer({
           customerId,
           name,
         })
-
-        console.log(customer)
-        console.log(customer)
-        console.log(customer)
-        console.log(customer)
-        console.log(customer)
-        console.log(customer)
-        console.log(customer)
 
         if (!customer) {
           throw new CouldNotFindOrCreateEntityError(
@@ -108,13 +95,6 @@ export class ProcessRowsWorkerService implements ProcessRowsService {
           )
         }
 
-        console.log('customer')
-        console.log(customer)
-        console.log({
-          orderId,
-          date,
-          customerId: customer.user_id,
-        })
         const order = await this.orderService.findOrCreateOrder({
           orderId,
           date,
@@ -146,9 +126,6 @@ export class ProcessRowsWorkerService implements ProcessRowsService {
           this.sendToDLDQueue(msg.content)
           return this.queueService.confirmAck(msg)
         }
-        console.log('0---------------------')
-        console.log('0---------------------')
-        console.log(retries)
         this.handleProcessMensagemError(msg.content, headers, retries)
         return this.queueService.confirmAck(msg)
       }

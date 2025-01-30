@@ -10,7 +10,7 @@ Decidi desenvolver o sistema em microsserviços, pois isso possibilita o process
 # Como Rodar o Projeto 🚀
 ## 📌 Pré-requisitos
 1. Ter o **Docker** instalado na máquina.
-2. Preencher as variáveis de ambiente (renomeie o arquivo **.env.example** de cada pasta para **.env** maior facilidade). Faça as alterações nas seguintes páginas:
+2. Preencher as variáveis de ambiente (renomeie o arquivo **.env.example** de cada pasta para **.env** maior facilidade). Faça as alterações nos seguintes arquivos:
   - `./api/.env`
   - `./workers/process-files/.env`
   - `./workers/process-rows/.env `

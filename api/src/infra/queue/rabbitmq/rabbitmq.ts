@@ -86,7 +86,6 @@ export class RabbitMQService implements QueueService {
     this.channel.sendToQueue(queueName, Buffer.from(JSON.stringify(message)), {
       persistent: true,
     })
-    console.log(`Message sent to queue "${queueName}":`, message)
   }
 
   async close() {
@@ -103,7 +102,6 @@ export class RabbitMQService implements QueueService {
       this.channel = null
       await this.connection.close()
       this.connection = null
-      console.log('RabbitMQ connection closed')
     } catch (error) {
       console.error('Failed to close RabbitMQ connection:', error)
     }
