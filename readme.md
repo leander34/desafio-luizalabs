@@ -14,7 +14,6 @@ Decidi desenvolver o sistema em microsserviços, pois isso possibilita o process
   - `./api/.env`
   - `./workers/process-files/.env`
   - `./workers/process-rows/.env `
-3. **Importante** Para adicionar as variáveis **STORAGE_SECRET_KEY** e **STORAGE_BUCKET_NAME** acessar portal do MinIO no navegador (http://localhost:9001) para criar as API KEYs. Para acessar essa URL o container já deve estar rodando. Veremos como fazer isso no próximo passo.
    
 ## Comandos Para Rodar o Projeto
 1. Renomeie os arquivos **.env.example** para **.env**
@@ -34,8 +33,8 @@ Decidi desenvolver o sistema em microsserviços, pois isso possibilita o process
    STORAGE_PROVIDER="MINIO"
    STORAGE_ENDPOINT="http://minio:9000"
    STORAGE_PORT="9000"
-   STORAGE_ACCESS_KEY="SUA_ACCESS_KEY_GERADA_NO_PORTAL_MINIO"
-   STORAGE_SECRET_KEY="SUA_SECRET_KEY_GERADA_NO_PORTAL_MINIO"
+   STORAGE_ACCESS_KEY="minioadmin"
+   STORAGE_SECRET_KEY="minioadmin"
    STORAGE_BUCKET_NAME="desafio-labs"        
    STORAGE_REGION="us-east-1"
 
@@ -55,8 +54,8 @@ Decidi desenvolver o sistema em microsserviços, pois isso possibilita o process
    STORAGE_PROVIDER="MINIO"
    STORAGE_ENDPOINT="http://minio:9000"
    STORAGE_PORT="9000"
-   STORAGE_ACCESS_KEY="SUA_ACCESS_KEY_GERADA_NO_PORTAL_MINIO"
-   STORAGE_SECRET_KEY="SUA_SECRET_KEY_GERADA_NO_PORTAL_MINIO"
+   STORAGE_ACCESS_KEY="minioadmin"
+   STORAGE_SECRET_KEY="minioadmin"
    STORAGE_BUCKET_NAME="desafio-labs"
    STORAGE_REGION="us-east-1"
 ```
@@ -87,20 +86,21 @@ Para apenas rodar os testes `docker exec -it worker-process-rows-s3kzfsoz34 npm 
 Endpoint usado para fazer upload dos arquivos .txt
 Formatos validos: Apenas ".txt"
 ```bash
-   curl -X GET http://localhost:3000/users/orders
+   curl -X POST http://localhost:3000/files/order \
+     -F "arquivo=@caminho/do/arquivo.txt"
 ```
 ### Endpoint `/users/orders`
 Endpoint de retorno dos dados normalizados em JSON
 ```bash
-
-   curl -X POST http://localhost:3000/files/order \
-     -F "arquivo=@caminho/do/arquivo.txt"
-
+   curl -X GET http://localhost:3000/users/orders
 ```
  Alguns filtros disponíveis:
 - start_date: '2021-06-02' - Formato -> 'YYYY-MM-DD'
 - end_date: '2021-10-10' - Formato -> 'YYYY-MM-DD'
-- order_id: 1
+- order_id
+- page 
+- size -> min: 1 | max: 500
+Existe a opção de paginar e limitar a quantidade de dados que vem no retorno, por padrão traz 500 users.
 Existe validação de formato para os campos "start_date" e "end_date"
 Por exemplo -> formato inválido: DD/MM/YYYY
 Caso você envie uma data com valores de dia ou mês não permidos como por exemplo 2021-04-32, o sistema converte essa data para 2021-05-01. Vale para o mês também.
@@ -120,7 +120,6 @@ Prisma ORM: (armazenamento otimizado)
 
 🔹 Infraestrutura:
 Docker + Docker Compose: para facilitar a orquestração dos serviços.
-Redis: cache para otimizar buscas frequentes.
 RabbitMQ: mensageria para distribuir tarefas entre os workers.
 MySQL: Banco de dados relacional utilizado para armazenar dados estruturados.
 MinIo: Armazenamento de objetos auto-hospedado e totalmente compativel com o s3. Ideal para ambientes de desenvolvimento.
@@ -145,7 +144,7 @@ E nas entities que as regras de negócio deveriam estar e elas não podem depend
 ### Camada de infra/adapters:
 Coloquei tantos os controllers quanto as implementações dos repositories aqui. Nessa pasta é onde a comunição entre o sistema e o mundo externo acontece.
 Uma interface de comunicação com o mundo pode ser o controller que receber requisições http e chama os casos de uso.
-Podemos essa organização acontecendo no PrismaCustomerRepository que impletamenta o CustomerReposity usando o prisma para se comunicar com o banco de dados, essa impletação deve acontece quando estamos pensando na infra.
+Podemos essa organização acontecendo no PrismaCustomerRepository que impletamenta o CustomerReposity usando o prisma para se comunicar com o banco de dados, essa impletação deve acontecer quando estamos pensando na infra.
 Também temos nessa pasta arquivos como o `ordersRoutes` dentro dessa pasta que conecta os controllers do o framework fastify.
 
 A separação garante que o Domínio e Aplicação não dependam da infraestrutura, tornando o código mais modular, testável, fácil de evoluir e agnóstico ao framework.
@@ -183,6 +182,7 @@ Entrega mais rápida → Processamento paralelo significa que resultados chegam 
 
 # 🚀 Melhorias Futuras
 📌 Adição de suporte a outros formatos de arquivo (JSON, XML).
+
 📌 Monitoramento de fila no Prometheus + Grafana.
 
 
@@ -198,7 +198,10 @@ No worker process rows: Cada linha é recebida, processada e validada de maneira
 Armazenamento: Dados estruturados são armazenados no MySQL.
 
 # Autor
+
 **Nome**: Leander Silveira Santos
+
 **LinkedIn**: https://www.linkedin.com/in/leander-silveira/
+
 **Github**: https://github.com/leander34
 
