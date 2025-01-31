@@ -19,9 +19,15 @@ export class GetCustomerController {
     }>,
     reply: FastifyReply<{ Reply: z.infer<typeof getCustomerResponseSchema> }>,
   ) {
-    const { id } = request.params
+    const {
+      order_file_id: orderFileId,
+      external_user_id_from_file: externalCustomerIdFromFile,
+    } = request.params
     const useCase = makeGetCustomerUseCase()
-    const result = await useCase.execute({ customerId: id })
+    const result = await useCase.execute({
+      externalCustomerIdFromFile,
+      orderFileId,
+    })
     if (result.isLeft()) {
       const error = result.value
 

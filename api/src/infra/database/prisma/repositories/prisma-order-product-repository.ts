@@ -1,7 +1,7 @@
 import { Decimal } from '@prisma/client/runtime/library.js'
 
 import type {
-  FindByOrderIdAndProductIdAndValueParams,
+  FindByExtOrderIdAndExtProductIdAndValueParams,
   OrderProductRepository,
 } from '@/application/repositories/order-product-repository'
 import type { OrderProduct } from '@/domain/entities/order-product'
@@ -12,26 +12,27 @@ import { PrismaOrderProductMapper } from '../mappers/prisma-order-product-mapper
 
 export class PrismaOrderProductRepository implements OrderProductRepository {
   constructor(private cacheService: CacheRepository) {}
-  async findByOrderIdAndProductIdAndValue({
+
+  async findByOrderIdAndExtProductIdAndValue({
     orderId,
-    productId,
+    externalProductIdFromFile,
     value,
-  }: FindByOrderIdAndProductIdAndValueParams): Promise<OrderProduct | null> {
-    const prismaOrderProduct = await prismaClient.orderProduct.findUnique({
+  }: FindByExtOrderIdAndExtProductIdAndValueParams): Promise<OrderProduct | null> {
+    const prismaOrder = await prismaClient.orderProduct.findUnique({
       where: {
-        productId_orderId_value: {
+        externalProductIdFromFile_orderId_value: {
+          externalProductIdFromFile,
           orderId,
-          productId,
           value: new Decimal(Number(value.toFixed(2))),
         },
       },
     })
 
-    if (!prismaOrderProduct) {
+    if (!prismaOrder) {
       return null
     }
 
-    return PrismaOrderProductMapper.toDomain(prismaOrderProduct)
+    return PrismaOrderProductMapper.toDomain(prismaOrder)
   }
 
   async create(orderProduct: OrderProduct): Promise<void> {
@@ -42,7 +43,7 @@ export class PrismaOrderProductRepository implements OrderProductRepository {
       data: orderProductConvertedToPrisma,
     })
 
-    await this.cacheService.deleteKeysByPattern(`order*`)
+    // await this.cacheService.deleteKeysByPattern(`order*`)
   }
 
   async increaseQuantity(orderProduct: OrderProduct): Promise<void> {
@@ -54,6 +55,6 @@ export class PrismaOrderProductRepository implements OrderProductRepository {
         quantity: orderProduct.quantity,
       },
     })
-    await this.cacheService.deleteKeysByPattern(`order*`)
+    // await this.cacheService.deleteKeysByPattern(`order*`)
   }
 }

@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/63</span>
+                <span class='fraction'>0/80</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/63</span>
+                <span class='fraction'>0/80</span>
             </div>
         
             
@@ -126,7 +126,24 @@
 <a name='L61'></a><a href='#L61'>61</a>
 <a name='L62'></a><a href='#L62'>62</a>
 <a name='L63'></a><a href='#L63'>63</a>
-<a name='L64'></a><a href='#L64'>64</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -189,7 +206,25 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >import { type Either, left, right } from '@/core/either'</span></span></span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >import type { OrderFileRepository } from '@/application/repositories/order-file-repository'</span></span></span>
+<span class="cstat-no" title="statement not covered" >import { type Either, left, right } from '@/core/either'</span>
 <span class="cstat-no" title="statement not covered" >import { UniqueEntityId } from '@/core/entities/unique-entity-id'</span>
 <span class="cstat-no" title="statement not covered" >import { Order } from '@/domain/entities/order'</span>
 <span class="cstat-no" title="statement not covered" ></span>
@@ -199,8 +234,9 @@
 <span class="cstat-no" title="statement not covered" >import type { OrderRepository } from '../../repositories/order-repository'</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >interface CreateOrderUseCaseRequest {</span>
-<span class="cstat-no" title="statement not covered" >  orderId: number | null</span>
-<span class="cstat-no" title="statement not covered" >  customerId: number</span>
+<span class="cstat-no" title="statement not covered" >  externalOrderIdFromFile: number</span>
+<span class="cstat-no" title="statement not covered" >  externalCustomerIdFromFile: number</span>
+<span class="cstat-no" title="statement not covered" >  orderFileId: number</span>
 <span class="cstat-no" title="statement not covered" >  date: string</span>
 <span class="cstat-no" title="statement not covered" >}</span>
 <span class="cstat-no" title="statement not covered" ></span>
@@ -212,42 +248,57 @@
 <span class="cstat-no" title="statement not covered" >export class CreateOrderUseCase {</span>
 <span class="cstat-no" title="statement not covered" >  constructor(</span>
 <span class="cstat-no" title="statement not covered" >    private orderRepository: OrderRepository,</span>
+<span class="cstat-no" title="statement not covered" >    private orderFileRepository: OrderFileRepository,</span>
 <span class="cstat-no" title="statement not covered" >    private customerRepository: CustomerRepository,</span>
 <span class="cstat-no" title="statement not covered" >  ) {}</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >  async execute({</span>
-<span class="cstat-no" title="statement not covered" >    orderId,</span>
-<span class="cstat-no" title="statement not covered" >    customerId,</span>
+<span class="cstat-no" title="statement not covered" >    externalOrderIdFromFile,</span>
+<span class="cstat-no" title="statement not covered" >    externalCustomerIdFromFile,</span>
+<span class="cstat-no" title="statement not covered" >    orderFileId,</span>
 <span class="cstat-no" title="statement not covered" >    date,</span>
 <span class="cstat-no" title="statement not covered" >  }: CreateOrderUseCaseRequest): Promise&lt;CreateOrderUseCaseResponse&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    if (orderId) {</span>
-<span class="cstat-no" title="statement not covered" >      const orderById = await this.orderRepository.findById(orderId)</span>
+<span class="cstat-no" title="statement not covered" >    const orderFile = await this.orderFileRepository.findById(orderFileId)</span>
+<span class="cstat-no" title="statement not covered" >    if (!orderFile) {</span>
+<span class="cstat-no" title="statement not covered" >      return left(</span>
+<span class="cstat-no" title="statement not covered" >        new ResourceNotFoundError('Order file not found.', 'order_file'),</span>
+<span class="cstat-no" title="statement not covered" >      )</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+<span class="cstat-no" title="statement not covered" >    const customer =</span>
+<span class="cstat-no" title="statement not covered" >      await this.customerRepository.findUniqueByExternalIdAndFileId({</span>
+<span class="cstat-no" title="statement not covered" >        externalCustomerIdFromFile,</span>
+<span class="cstat-no" title="statement not covered" >        orderFileId,</span>
+<span class="cstat-no" title="statement not covered" >      })</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >      if (orderById) {</span>
-<span class="cstat-no" title="statement not covered" >        return left(</span>
-<span class="cstat-no" title="statement not covered" >          new BadRequestError(</span>
-<span class="cstat-no" title="statement not covered" >            'There is already an order with this Id.',</span>
-<span class="cstat-no" title="statement not covered" >            'order',</span>
-<span class="cstat-no" title="statement not covered" >          ),</span>
-<span class="cstat-no" title="statement not covered" >        )</span>
-<span class="cstat-no" title="statement not covered" >      }</span>
+<span class="cstat-no" title="statement not covered" >    if (!customer) {</span>
+<span class="cstat-no" title="statement not covered" >      return left(</span>
+<span class="cstat-no" title="statement not covered" >        new ResourceNotFoundError('User not found in this order file.', 'user'),</span>
+<span class="cstat-no" title="statement not covered" >      )</span>
 <span class="cstat-no" title="statement not covered" >    }</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    const customerById = this.customerRepository.findById(customerId)</span>
+<span class="cstat-no" title="statement not covered" >    const order = await this.orderRepository.findUniqueByExternalIdAndFileId({</span>
+<span class="cstat-no" title="statement not covered" >      externalOrderIdFromFile,</span>
+<span class="cstat-no" title="statement not covered" >      orderFileId,</span>
+<span class="cstat-no" title="statement not covered" >      externalCustomerIdFromFile,</span>
+<span class="cstat-no" title="statement not covered" >    })</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    if (!customerById) {</span>
-<span class="cstat-no" title="statement not covered" >      return left(new ResourceNotFoundError('User not found.', 'user'))</span>
+<span class="cstat-no" title="statement not covered" >    if (order) {</span>
+<span class="cstat-no" title="statement not covered" >      return left(</span>
+<span class="cstat-no" title="statement not covered" >        new BadRequestError(</span>
+<span class="cstat-no" title="statement not covered" >          'There is already an order with this id in this file.',</span>
+<span class="cstat-no" title="statement not covered" >          'order',</span>
+<span class="cstat-no" title="statement not covered" >        ),</span>
+<span class="cstat-no" title="statement not covered" >      )</span>
 <span class="cstat-no" title="statement not covered" >    }</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    const order = Order.create(</span>
-<span class="cstat-no" title="statement not covered" >      {</span>
-<span class="cstat-no" title="statement not covered" >        date,</span>
-<span class="cstat-no" title="statement not covered" >        customerId: new UniqueEntityId(customerId),</span>
-<span class="cstat-no" title="statement not covered" >      },</span>
-<span class="cstat-no" title="statement not covered" >      orderId ? new UniqueEntityId(orderId) : undefined,</span>
-<span class="cstat-no" title="statement not covered" >    )</span>
+<span class="cstat-no" title="statement not covered" >    const createdOrder = Order.create({</span>
+<span class="cstat-no" title="statement not covered" >      date,</span>
+<span class="cstat-no" title="statement not covered" >      orderFileId: new UniqueEntityId(orderFileId),</span>
+<span class="cstat-no" title="statement not covered" >      customerId: customer.id,</span>
+<span class="cstat-no" title="statement not covered" >      externalOrderIdFromFile: new UniqueEntityId(externalOrderIdFromFile),</span>
+<span class="cstat-no" title="statement not covered" >    })</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    await this.orderRepository.create(order)</span>
+<span class="cstat-no" title="statement not covered" >    await this.orderRepository.create(createdOrder)</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    return right(null)</span>
 <span class="cstat-no" title="statement not covered" >  }</span>
@@ -259,7 +310,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-01-29T22:24:52.086Z
+                at 2025-01-30T22:41:30.211Z
             </div>
         <script src="../../../../../prettify.js"></script>
         <script>

@@ -27,17 +27,6 @@ export class InMemoryOrderFileRepository implements OrderFileRepository {
     return orderFile
   }
 
-  //   async findManyByAnswerId(
-  //     answerId: string,
-  //     { page }: PaginationParams,
-  //   ): Promise<AnswerComment[]> {
-  //     const answerComments = this.items
-  //       .filter((answerComment) => answerComment.answerId.toString() === answerId)
-  //       .slice((page - 1) * 20, page * 20)
-
-  //     return answerComments
-  //   }
-
   async create(orderFile: OrderFile): Promise<OrderFile> {
     const {
       bucket,
@@ -63,16 +52,9 @@ export class InMemoryOrderFileRepository implements OrderFileRepository {
         updatedAt,
         url,
       },
-      id || new UniqueEntityId(generateRandomId()),
+      id.toDBValue() === -1 ? new UniqueEntityId(generateRandomId()) : id,
     )
     this.items.push(newOrderFile)
     return newOrderFile
   }
-
-  //   async delete(answerComment: AnswerComment): Promise<void> {
-  //     const itemIndex = this.items.findIndex(
-  //       (item) => item.id === answerComment.id,
-  //     )
-  //     this.items.splice(itemIndex, 1)
-  //   }
 }

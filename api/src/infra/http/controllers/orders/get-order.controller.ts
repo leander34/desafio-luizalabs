@@ -5,23 +5,31 @@ import { makeGetOrderUseCase } from '@/application/use-cases/factories/make-get-
 import { BadRequestError } from '@/core/errors/bad-request-error'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 
-import { OrderWithProductPresenter } from '../../presenters/order-with-products-presenter'
+import { OrderPresenter } from '../../presenters/order-presenter'
 import type {
+  getOrderRequestParamsSchema,
   getOrderResponseSchema,
-  getOrderResquestParamsSchema,
 } from '../../routes/orders/get-order'
 
 export class GetOrderController {
   async handler(
     request: FastifyRequest<{
-      Params: z.infer<typeof getOrderResquestParamsSchema>
+      Params: z.infer<typeof getOrderRequestParamsSchema>
       Reply: z.infer<typeof getOrderResponseSchema>
     }>,
     reply: FastifyReply<{ Reply: z.infer<typeof getOrderResponseSchema> }>,
   ) {
-    const { id } = request.params
+    const {
+      order_file_id: orderFileId,
+      external_order_id_from_file: externalOrderIdFromFile,
+      external_user_id_from_file: externalCustomerIdFromFile,
+    } = request.params
     const useCase = makeGetOrderUseCase()
-    const result = await useCase.execute({ orderId: id })
+    const result = await useCase.execute({
+      orderFileId,
+      externalOrderIdFromFile,
+      externalCustomerIdFromFile,
+    })
     if (result.isLeft()) {
       const error = result.value
 
@@ -37,7 +45,7 @@ export class GetOrderController {
     }
     const { order } = result.value
     return reply.status(200).send({
-      order: OrderWithProductPresenter.toHttp(order),
+      order: OrderPresenter.toHttp(order),
     })
   }
 }

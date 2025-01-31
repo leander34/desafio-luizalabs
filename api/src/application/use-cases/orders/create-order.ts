@@ -1,3 +1,4 @@
+import type { OrderFileRepository } from '@/application/repositories/order-file-repository'
 import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Order } from '@/domain/entities/order'
@@ -8,8 +9,9 @@ import type { CustomerRepository } from '../../repositories/customers-repository
 import type { OrderRepository } from '../../repositories/order-repository'
 
 interface CreateOrderUseCaseRequest {
-  orderId: number | null
-  customerId: number
+  externalOrderIdFromFile: number
+  externalCustomerIdFromFile: number
+  orderFileId: number
   date: string
 }
 
@@ -21,42 +23,57 @@ type CreateOrderUseCaseResponse = Either<
 export class CreateOrderUseCase {
   constructor(
     private orderRepository: OrderRepository,
+    private orderFileRepository: OrderFileRepository,
     private customerRepository: CustomerRepository,
   ) {}
 
   async execute({
-    orderId,
-    customerId,
+    externalOrderIdFromFile,
+    externalCustomerIdFromFile,
+    orderFileId,
     date,
   }: CreateOrderUseCaseRequest): Promise<CreateOrderUseCaseResponse> {
-    if (orderId) {
-      const orderById = await this.orderRepository.findById(orderId)
+    const orderFile = await this.orderFileRepository.findById(orderFileId)
+    if (!orderFile) {
+      return left(
+        new ResourceNotFoundError('Order file not found.', 'order_file'),
+      )
+    }
+    const customer =
+      await this.customerRepository.findUniqueByExternalIdAndFileId({
+        externalCustomerIdFromFile,
+        orderFileId,
+      })
 
-      if (orderById) {
-        return left(
-          new BadRequestError(
-            'There is already an order with this Id.',
-            'order',
-          ),
-        )
-      }
+    if (!customer) {
+      return left(
+        new ResourceNotFoundError('User not found in this order file.', 'user'),
+      )
     }
 
-    const customerById = await this.customerRepository.findById(customerId)
+    const order = await this.orderRepository.findUniqueByExternalIdAndFileId({
+      externalOrderIdFromFile,
+      orderFileId,
+      externalCustomerIdFromFile,
+    })
 
-    if (!customerById) {
-      return left(new ResourceNotFoundError('User not found.', 'user'))
+    if (order) {
+      return left(
+        new BadRequestError(
+          'There is already an order with this id in this file.',
+          'order',
+        ),
+      )
     }
 
-    const order = Order.create(
-      {
-        date,
-        customerId: new UniqueEntityId(customerId),
-      },
-      orderId ? new UniqueEntityId(orderId) : undefined,
-    )
+    const createdOrder = Order.create({
+      date,
+      orderFileId: new UniqueEntityId(orderFileId),
+      customerId: customer.id,
+      externalOrderIdFromFile: new UniqueEntityId(externalOrderIdFromFile),
+    })
 
-    await this.orderRepository.create(order)
+    await this.orderRepository.create(createdOrder)
 
     return right(null)
   }

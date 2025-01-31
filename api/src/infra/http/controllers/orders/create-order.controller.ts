@@ -5,25 +5,33 @@ import { makeCreateOrderUseCase } from '@/application/use-cases/factories/make-c
 import { BadRequestError } from '@/core/errors/bad-request-error'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 
-import type {
+import {
   createOrderRequestBodySchema,
+  createOrderRequestParamsSchema,
   createOrderResponseSchema,
 } from '../../routes/orders/create-order'
 
 export class CreateOrderController {
   async handler(
     request: FastifyRequest<{
+      Params: z.infer<typeof createOrderRequestParamsSchema>
       Body: z.infer<typeof createOrderRequestBodySchema>
       Reply: z.infer<typeof createOrderResponseSchema>
     }>,
     reply: FastifyReply<{ Reply: z.infer<typeof createOrderResponseSchema> }>,
   ) {
-    const { order_id: orderId, user_id: customerId, date } = request.body
+    const { order_id: externalOrderIdFromFile, date } = request.body
+
+    const {
+      order_file_id: orderFileId,
+      external_user_id_from_file: externalCustomerIdFromFile,
+    } = request.params
 
     const useCase = makeCreateOrderUseCase()
     const result = await useCase.execute({
-      orderId: orderId ?? null,
-      customerId,
+      orderFileId,
+      externalCustomerIdFromFile,
+      externalOrderIdFromFile,
       date,
     })
     if (result.isLeft()) {

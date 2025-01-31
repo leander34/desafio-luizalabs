@@ -58,12 +58,8 @@ export class App {
       routePrefix: '/docs',
     })
     this._app.register(orderFilesRoutes)
-    this._app.register(customersRoutes, {
-      prefix: '/users',
-    })
-    this._app.register(ordersRoutes, {
-      prefix: '/orders',
-    })
+    this._app.register(customersRoutes)
+    this._app.register(ordersRoutes)
   }
 
   errorHandler() {

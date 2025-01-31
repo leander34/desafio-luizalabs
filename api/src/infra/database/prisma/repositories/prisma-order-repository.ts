@@ -1,4 +1,7 @@
-import type { OrderRepository } from '@/application/repositories/order-repository'
+import type {
+  FindUniqueByExternalIdAndFileIdParams,
+  OrderRepository,
+} from '@/application/repositories/order-repository'
 import type { Order } from '@/domain/entities/order'
 import type { OrderWithProducts } from '@/domain/value-obejcts/order-with-products'
 import type { CacheRepository } from '@/infra/cache/cache-repository'
@@ -8,6 +11,44 @@ import { PrismaOrderMapper } from '../mappers/prisma-order-mapper'
 import { PrismaOrderWithProductsMapper } from '../mappers/prisma-order-with-products-mapper'
 export class PrismaOrderRepository implements OrderRepository {
   constructor(private cacheService: CacheRepository) {}
+  async findUniqueByExternalIdAndFileId({
+    externalOrderIdFromFile,
+    orderFileId,
+    externalCustomerIdFromFile,
+  }: FindUniqueByExternalIdAndFileIdParams): Promise<Order | null> {
+    const prismaOrder = await prismaClient.order.findUnique({
+      where: {
+        customer: {
+          externalCustomerIdFromFile,
+          orderFileId,
+        },
+        orderFileId_externalOrderIdFromFile: {
+          externalOrderIdFromFile,
+          orderFileId,
+        },
+      },
+      include: {
+        orderProducts: true,
+      },
+    })
+
+    if (!prismaOrder) {
+      return null
+    }
+
+    const orderTotalValue = prismaOrder.orderProducts.reduce(
+      (total, product) => {
+        return Number(
+          (total + product.value.toNumber() * product.quantity).toFixed(2),
+        )
+      },
+      0,
+    )
+    return PrismaOrderMapper.toDomain({
+      ...prismaOrder,
+      total: orderTotalValue,
+    })
+  }
 
   async findById(id: number): Promise<Order | null> {
     const prismaOrder = await prismaClient.order.findUnique({

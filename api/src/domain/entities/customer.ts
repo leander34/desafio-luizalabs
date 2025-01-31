@@ -5,6 +5,8 @@ import type { UniqueEntityId } from '../../core/entities/unique-entity-id'
 
 export interface CustomerProps {
   name: string
+  externalCustomerIdFromFile: UniqueEntityId
+  orderFileId: UniqueEntityId
   createdAt: Date
   updatedAt: Date
   deletedAt?: Date | null
@@ -28,6 +30,14 @@ export class Customer extends Entity<CustomerProps> {
 
   get name() {
     return this.props.name
+  }
+
+  get orderFileId() {
+    return this.props.orderFileId
+  }
+
+  get externalCustomerIdFromFile() {
+    return this.props.externalCustomerIdFromFile
   }
 
   get createdAt() {

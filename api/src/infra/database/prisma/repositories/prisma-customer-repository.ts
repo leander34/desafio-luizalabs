@@ -3,6 +3,7 @@ import type { Prisma } from '@prisma/client'
 import type {
   CustomerRepository,
   FindManyWithOrdersAndProductsParams,
+  FindUniqueByExternalIdAndFileIdParams,
 } from '@/application/repositories/customers-repository'
 import type { PaginationParams } from '@/core/pagination'
 import type { Customer } from '@/domain/entities/customer'
@@ -13,6 +14,25 @@ import { PrismaCustomerMapper } from '../mappers/prisma-customer-mapper'
 import { PrismaCustomerWithProductsMapper } from '../mappers/prisma-customer-with-products-mapper'
 export class PrismaCustomerRepository implements CustomerRepository {
   constructor() {}
+  async findUniqueByExternalIdAndFileId({
+    externalCustomerIdFromFile,
+    orderFileId,
+  }: FindUniqueByExternalIdAndFileIdParams): Promise<Customer | null> {
+    const prismaCustomer = await prismaClient.customer.findUnique({
+      where: {
+        orderFileId_externalCustomerIdFromFile: {
+          externalCustomerIdFromFile,
+          orderFileId,
+        },
+      },
+    })
+
+    if (!prismaCustomer) {
+      return null
+    }
+
+    return PrismaCustomerMapper.toDomain(prismaCustomer)
+  }
 
   async findById(id: number): Promise<Customer | null> {
     const prismaCustomer = await prismaClient.customer.findUnique({
@@ -42,15 +62,18 @@ export class PrismaCustomerRepository implements CustomerRepository {
 
     const where: Prisma.CustomerWhereInput = {}
 
-    if (params.orderId) {
+    if (params.externalOrderIdFromFile) {
       where.orders = {
         some: {
-          id: Number(params.orderId),
+          externalOrderIdFromFile: Number(params.externalOrderIdFromFile),
         },
       }
     }
 
-    if ((params.startDate || params.endDate) && !params.orderId) {
+    if (
+      (params.startDate || params.endDate) &&
+      !params.externalOrderIdFromFile
+    ) {
       where.orders = {
         some: {
           date: {
@@ -66,11 +89,13 @@ export class PrismaCustomerRepository implements CustomerRepository {
       skip: page ? ((page ?? 1) - 1) * size : undefined,
       where,
       select: {
-        id: true,
+        externalCustomerIdFromFile: true,
         name: true,
         orders: {
-          where: params.orderId
-            ? { id: Number(params.orderId) }
+          where: params.externalOrderIdFromFile
+            ? {
+                externalOrderIdFromFile: Number(params.externalOrderIdFromFile),
+              }
             : params.startDate || params.endDate
               ? {
                   date: {
@@ -80,11 +105,11 @@ export class PrismaCustomerRepository implements CustomerRepository {
                 }
               : undefined,
           select: {
-            id: true,
+            externalOrderIdFromFile: true,
             date: true,
             orderProducts: {
               select: {
-                productId: true,
+                externalProductIdFromFile: true,
                 quantity: true,
                 value: true,
               },
@@ -96,18 +121,18 @@ export class PrismaCustomerRepository implements CustomerRepository {
 
     const customerWithCombinedDate = customers.map((customer) => {
       return {
-        id: customer.id,
+        externalCustomerIdFromFile: customer.externalCustomerIdFromFile,
         name: customer.name,
         orders: customer.orders.map((order) => ({
-          id: order.id,
+          externalOrderIdFromFile: order.externalOrderIdFromFile,
           date: order.date,
           total: order.orderProducts.reduce(
             (acc, item) =>
               Number((acc + item.value.toNumber() * item.quantity).toFixed(2)),
             0,
           ),
-          products: order.orderProducts.map((orderProduct) => ({
-            productId: orderProduct.productId,
+          orderProducts: order.orderProducts.map((orderProduct) => ({
+            externalProductIdFromFile: orderProduct.externalProductIdFromFile,
             value: orderProduct.value.toNumber(),
             quantity: orderProduct.quantity,
           })),

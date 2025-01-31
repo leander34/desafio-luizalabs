@@ -5,7 +5,7 @@ import type { CustomerWithOrdersAndProducts } from '@/domain/value-obejcts/custo
 interface GetAllCustomersAndOrdersUseCaseRequest {
   startDate: string | null
   endDate: string | null
-  orderId: number | null
+  externalOrderIdFromFile: number | null
   page: number | null
   size: number | null
 }
@@ -22,7 +22,7 @@ export class GetAllCustomersAndOrdersUseCase {
   async execute({
     startDate,
     endDate,
-    orderId,
+    externalOrderIdFromFile,
     page,
     size,
   }: GetAllCustomersAndOrdersUseCaseRequest): Promise<GetAllCustomersAndOrdersUseCaseResponse> {
@@ -31,7 +31,7 @@ export class GetAllCustomersAndOrdersUseCase {
         {
           startDate,
           endDate,
-          orderId,
+          externalOrderIdFromFile,
         },
         {
           page,

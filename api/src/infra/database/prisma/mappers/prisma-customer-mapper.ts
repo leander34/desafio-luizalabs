@@ -6,6 +6,10 @@ export class PrismaCustomerMapper {
   static toDomain(prismaCustomer: PrismaCustomer): Customer {
     return Customer.create(
       {
+        externalCustomerIdFromFile: new UniqueEntityId(
+          prismaCustomer.externalCustomerIdFromFile,
+        ),
+        orderFileId: new UniqueEntityId(prismaCustomer.orderFileId),
         name: prismaCustomer.name,
         createdAt: prismaCustomer.createdAt,
         updatedAt: prismaCustomer.updatedAt,
@@ -19,6 +23,8 @@ export class PrismaCustomerMapper {
     return {
       id: customer.id.toDBValue(),
       name: customer.name,
+      externalCustomerIdFromFile: customer.externalCustomerIdFromFile.toValue(),
+      orderFileId: customer.orderFileId.toValue(),
       createdAt: customer.createdAt,
       updatedAt: customer.updatedAt,
       deletedAt: customer.deletedAt,

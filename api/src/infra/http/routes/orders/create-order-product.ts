@@ -3,9 +3,16 @@ import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
 import { CreateOrderProductController } from '../../controllers/orders/create-order-product.controller'
+
 export const createOrderProductRequestParamsSchema = z.object({
-  id: z.coerce.number({
-    invalid_type_error: 'id must be an integer.',
+  order_file_id: z.coerce.number({
+    invalid_type_error: 'order_file_id must be an integer.',
+  }),
+  external_user_id_from_file: z.coerce.number({
+    invalid_type_error: 'external_user_id_from_file must be an integer.',
+  }),
+  external_order_id_from_file: z.coerce.number({
+    invalid_type_error: 'external_order_id_from_file must be an integer.',
   }),
 })
 
@@ -26,7 +33,7 @@ export const createOrderProductResponseSchema = z.null()
 const controller = new CreateOrderProductController()
 export async function createOrderProduct(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post(
-    '/:id/products',
+    '/files/:order_file_id/users/:external_user_id_from_file/orders/:external_order_id_from_file/products',
     {
       schema: {
         tags: ['Orders'],

@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/45</span>
+                <span class='fraction'>0/51</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/45</span>
+                <span class='fraction'>0/51</span>
             </div>
         
             
@@ -108,7 +108,19 @@
 <a name='L43'></a><a href='#L43'>43</a>
 <a name='L44'></a><a href='#L44'>44</a>
 <a name='L45'></a><a href='#L45'>45</a>
-<a name='L46'></a><a href='#L46'>46</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -163,12 +175,8 @@
 <span class="cstat-no" title="statement not covered" >import { CreateOrderController } from '../../controllers/orders/create-order.controller'</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >export const createOrderRequestBodySchema = z.object({</span>
-<span class="cstat-no" title="statement not covered" >  order_id: z.coerce</span>
-<span class="cstat-no" title="statement not covered" >    .number({ invalid_type_error: 'order_id must be an integer.' })</span>
-<span class="cstat-no" title="statement not covered" >    .optional(),</span>
-<span class="cstat-no" title="statement not covered" >  user_id: z.coerce.number({</span>
-<span class="cstat-no" title="statement not covered" >    invalid_type_error: 'user_id must be an integer.',</span>
-<span class="cstat-no" title="statement not covered" >    required_error: 'user_id is required',</span>
+<span class="cstat-no" title="statement not covered" >  order_id: z.coerce.number({</span>
+<span class="cstat-no" title="statement not covered" >    invalid_type_error: 'order_id must be an integer.',</span>
 <span class="cstat-no" title="statement not covered" >  }),</span>
 <span class="cstat-no" title="statement not covered" >  date: z</span>
 <span class="cstat-no" title="statement not covered" >    .string({</span>
@@ -180,15 +188,25 @@
 <span class="cstat-no" title="statement not covered" >    })</span>
 <span class="cstat-no" title="statement not covered" >    .transform((value) =&gt; dayjs(value).format('YYYY-MM-DD')),</span>
 <span class="cstat-no" title="statement not covered" >})</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >export const createOrderRequestParamsSchema = z.object({</span>
+<span class="cstat-no" title="statement not covered" >  order_file_id: z.coerce.number({</span>
+<span class="cstat-no" title="statement not covered" >    invalid_type_error: 'order_file_id must be an integer.',</span>
+<span class="cstat-no" title="statement not covered" >  }),</span>
+<span class="cstat-no" title="statement not covered" >  external_user_id_from_file: z.coerce.number({</span>
+<span class="cstat-no" title="statement not covered" >    invalid_type_error: 'external_user_id_from_file must be an integer.',</span>
+<span class="cstat-no" title="statement not covered" >  }),</span>
+<span class="cstat-no" title="statement not covered" >})</span>
 <span class="cstat-no" title="statement not covered" >export const createOrderResponseSchema = z.null()</span>
 <span class="cstat-no" title="statement not covered" >const controller = new CreateOrderController()</span>
 <span class="cstat-no" title="statement not covered" >export async function createOrder(app: FastifyInstance) {</span>
 <span class="cstat-no" title="statement not covered" >  app.withTypeProvider&lt;ZodTypeProvider&gt;().post(</span>
-<span class="cstat-no" title="statement not covered" >    '/',</span>
+<span class="cstat-no" title="statement not covered" >    '/files/:order_file_id/users/:external_user_id_from_file/orders',</span>
 <span class="cstat-no" title="statement not covered" >    {</span>
 <span class="cstat-no" title="statement not covered" >      schema: {</span>
 <span class="cstat-no" title="statement not covered" >        tags: ['Orders'],</span>
 <span class="cstat-no" title="statement not covered" >        summary: 'Create an order',</span>
+<span class="cstat-no" title="statement not covered" >        params: createOrderRequestParamsSchema,</span>
 <span class="cstat-no" title="statement not covered" >        body: createOrderRequestBodySchema,</span>
 <span class="cstat-no" title="statement not covered" >        response: {</span>
 <span class="cstat-no" title="statement not covered" >          201: createOrderResponseSchema,</span>
@@ -205,7 +223,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-01-29T22:24:52.086Z
+                at 2025-01-30T22:41:30.211Z
             </div>
         <script src="../../../../../../prettify.js"></script>
         <script>

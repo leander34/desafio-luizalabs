@@ -34,7 +34,7 @@ export class GetAllCustomersAndOrdersController {
     const {
       start_date: startDate,
       end_date: endDate,
-      order_id: orderId,
+      order_id: externalOrderIdFromFile,
       page,
       size,
     } = queryParams.data
@@ -42,7 +42,7 @@ export class GetAllCustomersAndOrdersController {
     const result = await useCase.execute({
       startDate: startDate ?? null,
       endDate,
-      orderId,
+      externalOrderIdFromFile,
       page,
       size,
     })

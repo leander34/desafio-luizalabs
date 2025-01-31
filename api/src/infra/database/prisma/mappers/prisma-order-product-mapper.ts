@@ -7,7 +7,9 @@ export class PrismaOrderProductMapper {
     return OrderProduct.create(
       {
         orderId: new UniqueEntityId(prismaOrderProduct.orderId),
-        productId: new UniqueEntityId(prismaOrderProduct.orderId),
+        externalProductIdFromFile: new UniqueEntityId(
+          prismaOrderProduct.externalProductIdFromFile,
+        ),
         quantity: prismaOrderProduct.quantity,
         value: prismaOrderProduct.value.toNumber(),
         createdAt: prismaOrderProduct.createdAt,
@@ -24,7 +26,8 @@ export class PrismaOrderProductMapper {
     return {
       id: orderProduct.id.toDBValue(),
       orderId: orderProduct.orderId.toValue(),
-      productId: orderProduct.productId.toValue(),
+      externalProductIdFromFile:
+        orderProduct.externalProductIdFromFile.toValue(),
       quantity: orderProduct.quantity,
       value: orderProduct.value,
       createdAt: orderProduct.createdAt,

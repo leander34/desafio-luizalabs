@@ -12,46 +12,53 @@ datasource db {
 }
 
 model Customer {
-  id     Int    @id @default(autoincrement())
-  fileId String
-  name   String
+  id                         Int       @id @default(autoincrement())
+  orderFileId                Int       @map("order_file_id")
+  orderFile                  OrderFile @relation(fields: [orderFileId], references: [id])
+  externalCustomerIdFromFile Int       @map("external_customer_id_from_file")
+  name                       String
+  createdAt                  DateTime  @default(now()) @map("created_at")
+  updatedAt                  DateTime  @updatedAt @map("updated_at")
+  deletedAt                  DateTime? @map("deleted_at")
+  orders                     Order[]
 
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
-  orders    Order[]
-
+  @@unique([orderFileId, externalCustomerIdFromFile])
   @@map("customers")
 }
 
 model Order {
-  id            Int            @id @default(autoincrement())
-  customerId    Int            @map("customer_id")
-  customer      Customer       @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  date          String
-  orderProducts OrderProduct[]
+  id                      Int            @id @default(autoincrement())
+  customerId              Int            @map("customer_id")
+  customer                Customer       @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  date                    String
+  orderFileId             Int            @map("order_file_id")
+  orderFile               OrderFile      @relation(fields: [orderFileId], references: [id])
+  externalOrderIdFromFile Int            @map("external_order_id_from_file")
+  orderProducts           OrderProduct[]
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
 
+  @@unique([orderFileId, externalOrderIdFromFile])
+  @@index([date])
+  @@index([customerId])
   @@map("orders")
 }
 
 model OrderProduct {
-  id        Int     @id @default(autoincrement())
-  orderId   Int     @map("order_id")
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId Int     @map("product_id")
-  // product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
-  value     Decimal @db.Decimal(10, 2)
-  quantity  Int
+  id                        Int     @id @default(autoincrement())
+  orderId                   Int     @map("order_id")
+  order                     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  externalProductIdFromFile Int     @map("external_product_id_from_file")
+  value                     Decimal @db.Decimal(10, 2)
+  quantity                  Int
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
 
-  @@unique([productId, orderId, value])
+  @@unique([externalProductIdFromFile, orderId, value])
   @@map("order_products")
 }
 
@@ -62,16 +69,18 @@ enum OrderFileStatus {
 }
 
 model OrderFile {
-  id        Int             @id @default(autoincrement())
-  status    OrderFileStatus
-  name      String
-  key       String
-  url       String
-  bucket    String
-  error     String?
-  createdAt DateTime        @default(now()) @map("created_at")
-  updatedAt DateTime        @updatedAt @map("updated_at")
-  deletedAt DateTime?       @map("deleted_at")
+  id            Int             @id @default(autoincrement())
+  status        OrderFileStatus
+  name          String
+  key           String
+  url           String
+  bucket        String
+  error         String?
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+  deletedAt     DateTime?       @map("deleted_at")
+  fileOrders    Order[]
+  fileCustomers Customer[]
 
   @@map("order_files")
 }

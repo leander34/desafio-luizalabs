@@ -5,7 +5,7 @@ import type { UniqueEntityId } from '../../core/entities/unique-entity-id'
 
 export interface OrderProductProps {
   orderId: UniqueEntityId
-  productId: UniqueEntityId
+  externalProductIdFromFile: UniqueEntityId
   value: number
   quantity: number
   createdAt: Date
@@ -33,8 +33,8 @@ export class OrderProduct extends Entity<OrderProductProps> {
     return this.props.orderId
   }
 
-  get productId() {
-    return this.props.productId
+  get externalProductIdFromFile() {
+    return this.props.externalProductIdFromFile
   }
 
   get value() {

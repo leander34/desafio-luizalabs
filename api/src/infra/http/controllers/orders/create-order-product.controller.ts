@@ -20,13 +20,19 @@ export class CreateOrderProductController {
       Reply: z.infer<typeof createOrderProductResponseSchema>
     }>,
   ) {
-    const { product_id: productId, value } = request.body
-    const { id: orderId } = request.params
+    const { product_id: externalProductIdFromFile, value } = request.body
+    const {
+      order_file_id: orderFileId,
+      external_user_id_from_file: externalCustomerIdFromFile,
+      external_order_id_from_file: externalOrderIdFromFile,
+    } = request.params
 
     const useCase = makeCreateOrderProductUseCase()
     const result = await useCase.execute({
-      orderId,
-      productId,
+      orderFileId,
+      externalCustomerIdFromFile,
+      externalOrderIdFromFile,
+      externalProductIdFromFile,
       value,
     })
     if (result.isLeft()) {

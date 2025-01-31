@@ -83,7 +83,7 @@ export const getAllCustomersAndOrdersResponseSchema = z.array(
 const controller = new GetAllCustomersAndOrdersController()
 export async function getAllCustomersAndOrders(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().get(
-    '/orders',
+    '/users/orders',
     {
       schema: {
         tags: ['Customers'],

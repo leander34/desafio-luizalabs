@@ -7,8 +7,16 @@ export interface FindManyWithProductsParams {
   name: string | null
   orderId: number | null
 }
+export interface FindUniqueByExternalIdAndFileIdParams {
+  externalOrderIdFromFile: number
+  orderFileId: number
+  externalCustomerIdFromFile: number
+}
 export interface OrderRepository {
   findById(id: number): Promise<Order | null>
+  findUniqueByExternalIdAndFileId(
+    params: FindUniqueByExternalIdAndFileIdParams,
+  ): Promise<Order | null>
   // findManyWithProducts(
   //   params: FindManyWithProductsParams,
   //   pagination: PaginationParams,

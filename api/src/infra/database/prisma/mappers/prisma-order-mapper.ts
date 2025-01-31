@@ -7,6 +7,10 @@ export class PrismaOrderMapper {
     return Order.create(
       {
         customerId: new UniqueEntityId(prismaOrder.customerId),
+        externalOrderIdFromFile: new UniqueEntityId(
+          prismaOrder.externalOrderIdFromFile,
+        ),
+        orderFileId: new UniqueEntityId(prismaOrder.orderFileId),
         date: prismaOrder.date,
         total: prismaOrder.total,
         createdAt: prismaOrder.createdAt,
@@ -21,6 +25,8 @@ export class PrismaOrderMapper {
     return {
       id: order.id.toDBValue(),
       customerId: order.customerId.toValue(),
+      externalOrderIdFromFile: order.externalOrderIdFromFile.toValue(),
+      orderFileId: order.orderFileId.toValue(),
       date: order.date,
       createdAt: order.createdAt,
       updatedAt: order.updatedAt,

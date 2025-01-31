@@ -10,6 +10,7 @@ export default defineConfig(async () => {
       root: './',
       setupFiles: ['./test/setup-e2e.ts'],
       testEnvironment: 'node',
+      // mockReset: true,
     },
   }
 })

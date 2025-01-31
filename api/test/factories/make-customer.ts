@@ -10,6 +10,8 @@ export function makeCustomer(
   const customer = Customer.create(
     {
       name: faker.person.fullName(),
+      externalCustomerIdFromFile: new UniqueEntityId(),
+      orderFileId: new UniqueEntityId(),
       ...override,
     },
     id,

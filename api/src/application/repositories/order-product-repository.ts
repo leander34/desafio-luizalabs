@@ -1,14 +1,14 @@
 import type { OrderProduct } from '@/domain/entities/order-product'
 
-export interface FindByOrderIdAndProductIdAndValueParams {
-  productId: number
+export interface FindByExtOrderIdAndExtProductIdAndValueParams {
+  externalProductIdFromFile: number
   orderId: number
   value: number
 }
 
 export interface OrderProductRepository {
-  findByOrderIdAndProductIdAndValue(
-    params: FindByOrderIdAndProductIdAndValueParams,
+  findByOrderIdAndExtProductIdAndValue(
+    params: FindByExtOrderIdAndExtProductIdAndValueParams,
   ): Promise<OrderProduct | null>
   create(orderProduct: OrderProduct): Promise<void>
   increaseQuantity(orderProduct: OrderProduct): Promise<void>

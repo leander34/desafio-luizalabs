@@ -4,11 +4,18 @@ import type { CustomerWithOrdersAndProducts } from '@/domain/value-obejcts/custo
 export interface FindManyWithOrdersAndProductsParams {
   startDate: string | null
   endDate: string | null
-  orderId: number | null
+  externalOrderIdFromFile: number | null
+}
+export interface FindUniqueByExternalIdAndFileIdParams {
+  externalCustomerIdFromFile: number
+  orderFileId: number
 }
 export interface CustomerRepository {
   create(customer: Customer): Promise<void>
   findById(id: number): Promise<Customer | null>
+  findUniqueByExternalIdAndFileId(
+    params: FindUniqueByExternalIdAndFileIdParams,
+  ): Promise<Customer | null>
   findManyWithOrdersAndProducts(
     params: FindManyWithOrdersAndProductsParams,
     pagination: PaginationParams,

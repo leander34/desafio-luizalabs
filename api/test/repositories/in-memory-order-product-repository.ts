@@ -1,21 +1,20 @@
 import type {
-  FindByOrderIdAndProductIdAndValueParams,
+  FindByExtOrderIdAndExtProductIdAndValueParams,
   OrderProductRepository,
 } from '@/application/repositories/order-product-repository'
 import type { OrderProduct } from '@/domain/entities/order-product'
 
-export class InMemoryOrderRespositoryRepository
-  implements OrderProductRepository
-{
+export class InMemoryOrderProductRepository implements OrderProductRepository {
   public items: OrderProduct[] = []
 
-  async findByOrderIdAndProductIdAndValue(
-    params: FindByOrderIdAndProductIdAndValueParams,
+  async findByOrderIdAndExtProductIdAndValue(
+    params: FindByExtOrderIdAndExtProductIdAndValueParams,
   ): Promise<OrderProduct | null> {
     const orderProduct = this.items.find(
       (item) =>
         item.orderId.toValue() === params.orderId &&
-        item.productId.toValue() === params.productId &&
+        item.externalProductIdFromFile.toValue() ===
+          params.externalProductIdFromFile &&
         item.value === params.value,
     )
 

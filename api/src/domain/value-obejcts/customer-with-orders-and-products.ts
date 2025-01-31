@@ -2,15 +2,14 @@ import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { ValueObject } from '@/core/entities/value-object'
 
 interface CustomerWithOrdersAndProductsProps {
-  id: UniqueEntityId
+  externalCustomerIdFromFile: UniqueEntityId
   name: string
   orders: {
-    id: UniqueEntityId
+    externalOrderIdFromFile: UniqueEntityId
     date: string
     total: number
-
     orderProducts: {
-      productId: UniqueEntityId
+      externalProductIdFromFile: UniqueEntityId
       value: number
       quantity: number
     }[]
@@ -22,8 +21,8 @@ export class CustomerWithOrdersAndProducts extends ValueObject<CustomerWithOrder
     return new CustomerWithOrdersAndProducts(props)
   }
 
-  get id() {
-    return this.props.id
+  get externalCustomerIdFromFile() {
+    return this.props.externalCustomerIdFromFile
   }
 
   get name() {
