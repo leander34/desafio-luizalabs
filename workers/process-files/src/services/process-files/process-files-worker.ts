@@ -75,7 +75,9 @@ export class ProcessFilesWorkerService implements ProcessFilesService {
         for await (const line of rl) {
           this.queueService.sendToQueue(
             this.processRowsQueue,
-            Buffer.from(JSON.stringify(line)),
+            Buffer.from(
+              JSON.stringify({ order_file_id: orderFileId, content: line }),
+            ),
             {
               persistent: true,
             },

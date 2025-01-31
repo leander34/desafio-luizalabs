@@ -30,23 +30,33 @@ describe('Get Order Http', () => {
     }
     ;(api.get as Mock).mockResolvedValue(response)
     const order = { customerId: 1, orderId: 1 }
+    const orderFileId = 1
 
     const result = await getOrderHttp({
-      customerId: order.customerId,
-      orderId: order.orderId,
+      externalCustomerIdFromFile: order.customerId,
+      externalOrderIdFromFile: order.orderId,
+      orderFileId,
     })
     expect(result).toStrictEqual(response.data)
 
-    expect(api.get).toHaveBeenCalledWith('/orders/1')
+    expect(api.get).toHaveBeenCalledWith(
+      `/files/${orderFileId}/users/${order.customerId}/orders/${order.orderId}`,
+    )
   })
 
   it('should throw an error if the API request fails', async () => {
     ;(api.get as Mock).mockRejectedValueOnce(new Error('API error'))
     const order = { customerId: 1, orderId: 1 }
-
+    const orderFileId = 1
     await expect(
-      getOrderHttp({ customerId: order.customerId, orderId: order.orderId }),
+      getOrderHttp({
+        externalCustomerIdFromFile: order.customerId,
+        externalOrderIdFromFile: order.orderId,
+        orderFileId,
+      }),
     ).rejects.toThrow('API error')
-    expect(api.get).toHaveBeenCalledWith('/orders/1')
+    expect(api.get).toHaveBeenCalledWith(
+      `/files/${orderFileId}/users/${order.customerId}/orders/${order.orderId}`,
+    )
   })
 })

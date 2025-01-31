@@ -2,24 +2,31 @@ import type { OrderProduct } from '@/types/order-product'
 
 import { api } from '../api'
 interface CreateOrderProductHttpRequest {
-  orderId: number
-  productId: number
+  externalOrderIdFromFile: number
+  externalProductIdFromFile: number
+  externalCustomerIdFromFile: number
+  orderFileId: number
   value: number
 }
 
 type CreateOrderProductHttpResponse = OrderProduct
 export async function createOrderProductHttp({
-  orderId,
-  productId,
+  externalOrderIdFromFile,
+  externalProductIdFromFile,
+  externalCustomerIdFromFile,
+  orderFileId,
   value,
 }: CreateOrderProductHttpRequest): Promise<CreateOrderProductHttpResponse> {
-  await api.post(`/orders/${orderId}/products`, {
-    product_id: productId,
-    value,
-  })
+  await api.post(
+    `/files/${orderFileId}/users/${externalCustomerIdFromFile}/orders/${externalOrderIdFromFile}/products`,
+    {
+      product_id: externalProductIdFromFile,
+      value,
+    },
+  )
 
   return {
-    product_id: productId,
+    product_id: externalProductIdFromFile,
     value,
     quantity: 1,
   }

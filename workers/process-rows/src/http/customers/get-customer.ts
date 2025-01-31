@@ -3,7 +3,8 @@ import type { Customer } from '@/types/customer'
 import { api } from '../api'
 
 export interface GetCustomerHttpRequest {
-  id: number
+  externalCustomerIdFromFile: number
+  orderFileId: number
 }
 
 export interface GetCustomerHttpResponse {
@@ -11,8 +12,11 @@ export interface GetCustomerHttpResponse {
 }
 
 export async function getCustomerHttp({
-  id,
+  orderFileId,
+  externalCustomerIdFromFile,
 }: GetCustomerHttpRequest): Promise<GetCustomerHttpResponse> {
-  const { data } = await api.get<GetCustomerHttpResponse>(`/users/${id}`)
+  const { data } = await api.get<GetCustomerHttpResponse>(
+    `/files/${orderFileId}/users/${externalCustomerIdFromFile}`,
+  )
   return data
 }

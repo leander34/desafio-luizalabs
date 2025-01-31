@@ -1,37 +1,37 @@
 import type { Order } from '@/types/order'
-import type { OrderProduct } from '@/types/order-product'
 
 import { api } from '../api'
 
 interface CreateOrderHttpRequest {
-  orderId: number
-  customerId: number
+  externalOrderIdFromFile: number
+  externalCustomerIdFromFile: number
+  orderFileId: number
   date: string
 }
 
 interface CreateOrderHttpResponse {
-  order: Order & {
-    products: OrderProduct[]
-  }
+  order: Order
 }
 
 export async function createOrderHttp({
-  orderId,
-  customerId,
+  externalOrderIdFromFile,
+  externalCustomerIdFromFile,
   date,
+  orderFileId,
 }: CreateOrderHttpRequest): Promise<CreateOrderHttpResponse> {
-  await api.post(`/orders`, {
-    order_id: orderId,
-    user_id: customerId,
-    date,
-  })
+  await api.post(
+    `/files/${orderFileId}/users/${externalCustomerIdFromFile}/orders`,
+    {
+      order_id: externalOrderIdFromFile,
+      date,
+    },
+  )
 
   return {
     order: {
-      order_id: orderId,
+      order_id: externalOrderIdFromFile,
       date,
       total: 0,
-      products: [],
     },
   }
 }

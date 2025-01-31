@@ -123,15 +123,16 @@ describe('Process Files Worder Service', () => {
   })
 
   it('should send the message to the DLQ if retries exceed MAX_RETRIES', async () => {
+    const MAX_RETRIES = 100
     const content = Buffer.from('test message')
-    const headers = { retries: 5 }
+    const headers = { retries: MAX_RETRIES }
 
     vi.spyOn(processRowsWorkerService, 'sendToDLDQueue')
 
     await processRowsWorkerService.handleProcessMensagemError(
       content,
       headers,
-      5,
+      MAX_RETRIES,
     )
 
     expect(processRowsWorkerService.sendToDLDQueue).toHaveBeenCalledWith(
@@ -143,7 +144,13 @@ describe('Process Files Worder Service', () => {
     const headers = {}
 
     const mockMessage = {
-      content: Buffer.from(JSON.stringify('send to de DLQ queue')),
+      content: Buffer.from(
+        JSON.stringify({
+          order_file_id: 3,
+          content:
+            '00000                                    Sha Olson00000007020000000002     1419.692021071',
+        }),
+      ),
       fields: {},
       properties: {
         headers,
@@ -165,7 +172,13 @@ describe('Process Files Worder Service', () => {
 
   it('should handle message processing successfully', async () => {
     const mockMessage = {
-      content: Buffer.from(JSON.stringify({ order_file_id: 1 })),
+      content: Buffer.from(
+        JSON.stringify({
+          order_file_id: 3,
+          content:
+            '0000000075                                    Sha Olson00000007020000000002     1419.6920210718',
+        }),
+      ),
       fields: {},
       properties: {},
     }
@@ -206,9 +219,11 @@ describe('Process Files Worder Service', () => {
   it('should handle CouldNotFindOrCreateEntityError and retry the message', async () => {
     const messageMock = {
       content: Buffer.from(
-        JSON.stringify(
-          '0000000090                          Brittany Kshlerin I00000008510000000002     1911.2220210517',
-        ),
+        JSON.stringify({
+          order_file_id: 3,
+          content:
+            '0000000075                                    Sha Olson00000007020000000002     1419.6920210718',
+        }),
       ),
       properties: { headers: { retries: 0 } },
     }
@@ -255,13 +270,16 @@ describe('Process Files Worder Service', () => {
   })
 
   it('should handle retry logic and send message to DLQ after max retries', async () => {
+    const MAX_RETRIES = 100
     const messageMock = {
       content: Buffer.from(
-        JSON.stringify(
-          '0000000090                          Brittany Kshlerin I00000008510000000002     1911.2220210517',
-        ),
+        JSON.stringify({
+          order_file_id: 3,
+          content:
+            '0000000075                                    Sha Olson00000007020000000002     1419.6920210718',
+        }),
       ),
-      properties: { headers: { retries: 5 } },
+      properties: { headers: { retries: MAX_RETRIES } },
     }
 
     ;(processLine as Mock).mockReturnValue({
@@ -288,31 +306,36 @@ describe('Process Files Worder Service', () => {
   })
 
   it('should process customer and order creation', async () => {
+    const orderFileId = 3
     const messageMock = {
       content: Buffer.from(
-        JSON.stringify(
-          '0000000090                          Brittany Kshlerin I00000008510000000002     1911.2220210517',
-        ),
+        JSON.stringify({
+          order_file_id: orderFileId,
+          content:
+            '0000000075                                    Sha Olson00000007020000000002     1419.6920210718',
+        }),
       ),
       properties: { headers: { retries: 5 } },
     }
 
-    ;(processLine as Mock).mockReturnValue({
+    const line = {
       customerId: 123,
       name: 'Leander',
       orderId: 456,
       date: '2025-01-01',
       productId: 789,
       value: 100,
-    })
+    }
+
+    ;(processLine as Mock).mockReturnValue(line)
 
     await processRowsWorkerService.run()
     ;(customerService.findOrCreateCustomer as Mock).mockResolvedValue({
-      user_id: 123,
-      name: 'Leander',
+      user_id: line.customerId,
+      name: line.name,
     })
     ;(orderService.findOrCreateOrder as Mock).mockResolvedValue({
-      order_id: 456,
+      order_id: line.orderId,
     })
     ;(orderService.addOrderProduct as Mock).mockResolvedValue({})
 
@@ -320,44 +343,53 @@ describe('Process Files Worder Service', () => {
     await consumeCallback(messageMock)
 
     expect(customerService.findOrCreateCustomer).toHaveBeenCalledWith({
-      customerId: 123,
-      name: 'Leander',
+      externalCustomerIdFromFile: line.customerId,
+      name: line.name,
+      orderFileId,
     })
     expect(orderService.findOrCreateOrder).toHaveBeenCalled()
     expect(orderService.findOrCreateOrder).toHaveBeenCalledWith(
       expect.objectContaining({
-        orderId: 456,
-        date: '2025-01-01',
-        customerId: 123,
+        externalOrderIdFromFile: line.orderId,
+        date: line.date,
+        externalCustomerIdFromFile: line.customerId,
+        orderFileId,
       }),
     )
     expect(orderService.addOrderProduct).toHaveBeenCalledWith({
-      orderId: 456,
-      productId: 789,
-      currentProductValue: 100,
+      externalOrderIdFromFile: line.orderId,
+      externalProductIdFromFile: line.productId,
+      externalCustomerIdFromFile: line.customerId,
+      orderFileId,
+      currentProductValue: line.value,
     })
 
     expect(queueServiceMock.confirmAck).toHaveBeenCalledWith(messageMock)
   })
 
   it('should handle errors in order creation and retry or send to DLQ', async () => {
+    const orderFileId = 3
     const messageMock = {
       content: Buffer.from(
-        JSON.stringify(
-          '0000000090                          Brittany Kshlerin I00000008510000000002     1911.2220210517',
-        ),
+        JSON.stringify({
+          order_file_id: orderFileId,
+          content:
+            '0000000075                                    Sha Olson00000007020000000002     1419.6920210718',
+        }),
       ),
       properties: { headers: { retries: 0 } },
     }
 
-    ;(processLine as Mock).mockReturnValue({
+    const line = {
       customerId: 123,
       name: 'Leander',
       orderId: 456,
       date: '2025-01-01',
       productId: 789,
       value: 100,
-    })
+    }
+
+    ;(processLine as Mock).mockReturnValue(line)
 
     await processRowsWorkerService.run()
     ;(customerService.findOrCreateCustomer as Mock).mockResolvedValue({

@@ -13,7 +13,7 @@ export class ProcessRowsWorkerService implements ProcessRowsService {
   private processRowsQueue = env.QUEUE_NAME
   private processRowsQueueDLQ = `${env.QUEUE_NAME}.DLQ`
   private processRowsQueueRetry = `${env.QUEUE_NAME}.RETRY`
-  private MAX_RETRIES = 5
+  private MAX_RETRIES = 100
   constructor(
     private queueService: QueueService,
     private customerService: ICustomerService,
@@ -47,7 +47,7 @@ export class ProcessRowsWorkerService implements ProcessRowsService {
   }
 
   async run(): Promise<void> {
-    await this.queueService.start({ consumerPrefetch: 10 })
+    await this.queueService.start({ consumerPrefetch: 5 })
     await this.queueService.assertQueue('CONSUMER', this.processRowsQueue, {
       durable: true,
     })
@@ -63,7 +63,7 @@ export class ProcessRowsWorkerService implements ProcessRowsService {
       {
         durable: true,
         arguments: {
-          'x-message-ttl': 1000 * 10, // Mensagem ficará 10 segundos na "PROCESS.ROWS.RETRY"
+          'x-message-ttl': 1000 * 10, // Mensagem ficará 20 segundos na "PROCESS.ROWS.RETRY"
           'x-dead-letter-exchange': '', // Sem exchange - retorna à fila "PROCESS.ROWS"
           'x-dead-letter-routing-key': this.processRowsQueue, // Redireciona para a fila "PROCESS.ROWS"
         },
@@ -76,16 +76,27 @@ export class ProcessRowsWorkerService implements ProcessRowsService {
       const retries = headers.retries || 0
 
       try {
-        const content = JSON.parse(msg.content.toString())
+        const message = JSON.parse(msg.content.toString()) as {
+          order_file_id: number
+          content: string
+        }
+        const { order_file_id: orderFileId, content } = message
         if (String(content).length !== 95) {
           await this.sendToDLDQueue(msg.content)
           return this.queueService.confirmAck(msg)
         }
-        const { customerId, name, orderId, date, productId, value } =
-          processLine(content)
+        const {
+          customerId: externalCustomerIdFromFile,
+          name,
+          orderId: externalOrderIdFromFile,
+          date,
+          productId: externalProductIdFromFile,
+          value,
+        } = processLine(content)
 
         const customer = await this.customerService.findOrCreateCustomer({
-          customerId,
+          externalCustomerIdFromFile,
+          orderFileId,
           name,
         })
 
@@ -96,9 +107,10 @@ export class ProcessRowsWorkerService implements ProcessRowsService {
         }
 
         const order = await this.orderService.findOrCreateOrder({
-          orderId,
+          externalOrderIdFromFile,
           date,
-          customerId: customer.user_id,
+          externalCustomerIdFromFile,
+          orderFileId,
         })
 
         if (!order) {
@@ -108,8 +120,10 @@ export class ProcessRowsWorkerService implements ProcessRowsService {
         }
 
         const orderProduct = await this.orderService.addOrderProduct({
-          orderId: order.order_id,
-          productId,
+          externalOrderIdFromFile,
+          externalProductIdFromFile,
+          externalCustomerIdFromFile,
+          orderFileId,
           currentProductValue: value,
         })
 

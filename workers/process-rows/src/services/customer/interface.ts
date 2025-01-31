@@ -1,7 +1,8 @@
 import type { Customer } from '@/types/customer'
 
 export interface FindOrCreateCustomerParams {
-  customerId: number
+  externalCustomerIdFromFile: number
+  orderFileId: number
   name: string
 }
 export interface ICustomerService {

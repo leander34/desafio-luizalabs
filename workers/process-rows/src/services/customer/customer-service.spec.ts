@@ -25,7 +25,8 @@ describe('Customer Service', () => {
     ;(getCustomerHttp as Mock).mockResolvedValue(response)
 
     const result = await customerService.findOrCreateCustomer({
-      customerId: 1,
+      externalCustomerIdFromFile: 1,
+      orderFileId: 1,
       name: 'Leander',
     })
 
@@ -38,7 +39,8 @@ describe('Customer Service', () => {
     ;(getCustomerHttp as Mock).mockRejectedValue(new Error('API error'))
 
     const result = await customerService.findOrCreateCustomer({
-      customerId: 1,
+      externalCustomerIdFromFile: 1,
+      orderFileId: 1,
       name: 'Leander',
     })
     expect(result).toBe(null)
@@ -62,7 +64,8 @@ describe('Customer Service', () => {
     ;(createCustomerHttp as Mock).mockResolvedValue(response)
 
     const result = await customerService.findOrCreateCustomer({
-      customerId: 1,
+      externalCustomerIdFromFile: 1,
+      orderFileId: 1,
       name: 'Leander',
     })
     expect(result?.user_id).toBe(response.user_id)
@@ -83,7 +86,8 @@ describe('Customer Service', () => {
     ;(createCustomerHttp as Mock).mockRejectedValue(undefined)
 
     const result = await customerService.findOrCreateCustomer({
-      customerId: 1,
+      externalCustomerIdFromFile: 1,
+      orderFileId: 1,
       name: 'Leander',
     })
     expect(result).toBe(null)

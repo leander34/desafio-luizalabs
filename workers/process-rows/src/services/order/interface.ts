@@ -2,21 +2,20 @@ import type { Order } from '@/types/order'
 import type { OrderProduct } from '@/types/order-product'
 
 export interface FindOrCreateOrderParams {
-  customerId: number
-  orderId: number
+  externalCustomerIdFromFile: number
+  externalOrderIdFromFile: number
+  orderFileId: number
   date: string
 }
 export interface AddOrderProductParams {
-  productId: number
-  orderId: number
+  externalProductIdFromFile: number
+  externalOrderIdFromFile: number
+  externalCustomerIdFromFile: number
+  orderFileId: number
   currentProductValue: number
 }
 
-export type FindOrCreateOrderReturn =
-  | (Order & {
-      products: OrderProduct[]
-    })
-  | null
+export type FindOrCreateOrderReturn = Order | null
 
 export interface IOrderService {
   findOrCreateOrder(

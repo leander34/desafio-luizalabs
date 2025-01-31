@@ -120,12 +120,12 @@ describe('Process Files Worder Service', () => {
     expect(queueServiceMock.sendToQueue).toHaveBeenCalledTimes(2)
     expect(queueServiceMock.sendToQueue).toHaveBeenCalledWith(
       env.ROW_PROCESSING_QUEUE,
-      Buffer.from(JSON.stringify('line1')),
+      Buffer.from(JSON.stringify({ order_file_id: 1, content: 'line1' })),
       { persistent: true },
     )
     expect(queueServiceMock.sendToQueue).toHaveBeenCalledWith(
       env.ROW_PROCESSING_QUEUE,
-      Buffer.from(JSON.stringify('line2')),
+      Buffer.from(JSON.stringify({ order_file_id: 1, content: 'line2' })),
       { persistent: true },
     )
 

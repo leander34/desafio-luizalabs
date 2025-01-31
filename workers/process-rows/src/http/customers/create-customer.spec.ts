@@ -15,14 +15,16 @@ describe('Create Customer Htpp', () => {
     ;(api.post as Mock).mockResolvedValue(undefined)
     const customer = { customerId: 1, name: 'Leander' }
 
+    const orderFileId = 1
     const result = await createCustomerHttp({
-      customerId: customer.customerId,
+      externalCustomerIdFromFile: customer.customerId,
+      orderFileId,
       name: customer.name,
     })
     expect(result.user_id).toBe(customer.customerId)
     expect(result.name).toBe(customer.name)
 
-    expect(api.post).toHaveBeenCalledWith(`/users`, {
+    expect(api.post).toHaveBeenCalledWith(`/files/${orderFileId}/users`, {
       user_id: customer.customerId,
       name: customer.name,
     })
@@ -32,14 +34,17 @@ describe('Create Customer Htpp', () => {
     ;(api.post as Mock).mockRejectedValueOnce(new Error('API error'))
     const customer = { customerId: 1, name: 'Leander' }
 
+    const orderFileId = 1
+
     await expect(
       createCustomerHttp({
-        customerId: customer.customerId,
+        externalCustomerIdFromFile: customer.customerId,
+        orderFileId,
         name: customer.name,
       }),
     ).rejects.toThrow('API error')
 
-    expect(api.post).toHaveBeenCalledWith(`/users`, {
+    expect(api.post).toHaveBeenCalledWith(`/files/${orderFileId}/users`, {
       user_id: customer.customerId,
       name: customer.name,
     })

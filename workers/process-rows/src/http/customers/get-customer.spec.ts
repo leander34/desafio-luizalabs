@@ -21,8 +21,12 @@ describe('Get Customer Http', () => {
       },
     }
     ;(api.get as Mock).mockResolvedValue(response)
-
-    const result = await getCustomerHttp({ id: 1 })
+    const orderFileId = 1
+    const externalCustomerIdFromFile = 1
+    const result = await getCustomerHttp({
+      externalCustomerIdFromFile,
+      orderFileId,
+    })
     expect(result).toBe(response.data)
 
     expect(result).toStrictEqual(
@@ -33,14 +37,24 @@ describe('Get Customer Http', () => {
         }),
       }),
     )
-    expect(api.get).toHaveBeenCalledWith('/users/1')
+    expect(api.get).toHaveBeenCalledWith(
+      `/files/${orderFileId}/users/${externalCustomerIdFromFile}`,
+    )
   })
 
   it('should throw an error if the API request fails', async () => {
     ;(api.get as Mock).mockRejectedValueOnce(new Error('API error'))
+    const orderFileId = 1
+    const externalCustomerIdFromFile = 1
+    await expect(
+      getCustomerHttp({
+        externalCustomerIdFromFile,
+        orderFileId,
+      }),
+    ).rejects.toThrow('API error')
 
-    await expect(getCustomerHttp({ id: 1 })).rejects.toThrow('API error')
-
-    expect(api.get).toHaveBeenCalledWith('/users/1')
+    expect(api.get).toHaveBeenCalledWith(
+      `/files/${orderFileId}/users/${externalCustomerIdFromFile}`,
+    )
   })
 })

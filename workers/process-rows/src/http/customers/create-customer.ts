@@ -3,23 +3,26 @@ import type { Customer } from '@/types/customer'
 import { api } from '../api'
 
 interface CreateCustomerHttpRequest {
-  customerId: number
+  externalCustomerIdFromFile: number
+  orderFileId: number
   name: string
 }
 
 type CreateCustomerHttpResponse = Customer
 
 export async function createCustomerHttp({
-  customerId,
+  externalCustomerIdFromFile,
+  orderFileId,
   name,
 }: CreateCustomerHttpRequest): Promise<CreateCustomerHttpResponse> {
-  await api.post(`/users`, {
-    user_id: customerId,
+  await api.post(`/files/${orderFileId}/users`, {
+    user_id: externalCustomerIdFromFile,
     name,
   })
 
   return {
-    user_id: customerId,
+    user_id: externalCustomerIdFromFile,
     name,
+    order_file_id: orderFileId,
   }
 }

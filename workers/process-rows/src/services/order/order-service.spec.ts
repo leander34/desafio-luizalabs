@@ -40,9 +40,10 @@ describe('Order Service', () => {
     ;(getOrderHttp as Mock).mockResolvedValue(response)
 
     const result = await orderService.findOrCreateOrder({
-      customerId: 1,
+      externalCustomerIdFromFile: 1,
+      externalOrderIdFromFile: 1,
+      orderFileId: 1,
       date: '2021-01-01',
-      orderId: 1,
     })
 
     expect(result).toBe(response.order)
@@ -54,9 +55,10 @@ describe('Order Service', () => {
     ;(getOrderHttp as Mock).mockRejectedValue(new Error('API error'))
 
     const result = await orderService.findOrCreateOrder({
-      customerId: 1,
+      externalCustomerIdFromFile: 1,
+      externalOrderIdFromFile: 1,
+      orderFileId: 1,
       date: '2021-10-10',
-      orderId: 1,
     })
     expect(result).toBe(null)
     expect(getOrderHttp).toHaveBeenCalledTimes(1)
@@ -83,9 +85,10 @@ describe('Order Service', () => {
     ;(createOrderHttp as Mock).mockResolvedValue(response)
 
     const result = await orderService.findOrCreateOrder({
-      customerId: 1,
-      date: '2022-01-10',
-      orderId: 1,
+      externalCustomerIdFromFile: 1,
+      externalOrderIdFromFile: 1,
+      orderFileId: 1,
+      date: '2021-10-10',
     })
     expect(result?.order_id).toBe(response.order.order_id)
     expect(result?.date).toBe(response.order.date)
@@ -107,9 +110,10 @@ describe('Order Service', () => {
     ;(createOrderHttp as Mock).mockRejectedValue(undefined)
 
     const result = await orderService.findOrCreateOrder({
-      customerId: 1,
-      date: '2022-01-10',
-      orderId: 1,
+      externalCustomerIdFromFile: 1,
+      externalOrderIdFromFile: 1,
+      orderFileId: 1,
+      date: '2021-10-10',
     })
     expect(result).toBe(null)
     expect(getOrderHttp).toHaveBeenCalledTimes(1)
@@ -126,9 +130,11 @@ describe('Order Service', () => {
     ;(createOrderProductHttp as Mock).mockResolvedValue(response)
 
     const result = await orderService.addOrderProduct({
+      externalCustomerIdFromFile: 1,
+      externalOrderIdFromFile: 1,
+      externalProductIdFromFile: 100,
+      orderFileId: 1,
       currentProductValue: 100,
-      orderId: 100,
-      productId: 100,
     })
     expect(result?.product_id).toBe(response.product_id)
     expect(result?.quantity).toBe(response.quantity)
@@ -141,9 +147,11 @@ describe('Order Service', () => {
     ;(createOrderProductHttp as Mock).mockRejectedValue(undefined)
 
     const result = await orderService.addOrderProduct({
+      externalCustomerIdFromFile: 1,
+      externalOrderIdFromFile: 1,
+      externalProductIdFromFile: 100,
+      orderFileId: 1,
       currentProductValue: 100,
-      orderId: 100,
-      productId: 100,
     })
 
     expect(result).toBe(null)
